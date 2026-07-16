@@ -1,38 +1,9 @@
-from typing import Any
-
 import numpy as np
 from matplotlib import pyplot as plt
 
+from core.data.data_generator import make_const_accel_data
 from core.feedforward.quasistatic_solver import QuasistaticSolver
 from core.sample.logged_sample import LoggedSample
-
-def calculate_voltage(torque, omega, kt, kv, int_res):
-    """
-    :param torque: Torque (N*m)
-    :param omega: Angular Acceleration (rad/s)
-    :param kt: Torque constant (N*m/A)
-    :param kv: Motor velocity constant ((rad/s)/V)
-    :param int_res: Internal resistance (Ohms)
-    :return:
-    """
-    return torque/kt*int_res + omega/kv
-
-def make_const_accel_data(x0: float, v0: float, a: float, time: float, dt: float = 0.005) -> list[LoggedSample]:
-    data = []
-    kt = 0.1
-    kv_motor = 0.1
-    int_res = 0.02
-
-    friction_torque = 0.5
-
-    for i in range(0, int(time/dt)):
-        t = i*dt
-        x = x0+v0*t+0.5*a*t**2
-        v = v0+a*t
-
-        V = calculate_voltage(friction_torque, v, kt, kv_motor, int_res)
-        data.append(LoggedSample(x,v,a,V))
-    return data
 
 
 def plot_quasistatic_identification(data: list[LoggedSample], ks: float, kv: float):
