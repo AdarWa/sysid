@@ -56,6 +56,11 @@ def make_dynamic_step_data(time: float, dt: float = 0.005) -> list[LoggedSample]
     data = []
     kt, kv_motor, int_res = 0.1, 0.1, 0.02
     friction_torque = 0.5
+    mass = 0.5 # kg
+    g = 9.81
+    dam_radius = 0.05 # m
+    gravity_torque = mass*g*dam_radius
+
     inertia = 0.25  # kg*m^2
 
     # Velocity exponential curve
@@ -70,7 +75,7 @@ def make_dynamic_step_data(time: float, dt: float = 0.005) -> list[LoggedSample]
         a = (v_max / tau) * exp(-t / tau)
         x += v * dt
 
-        V = calculate_dynamic_voltage(friction_torque, inertia, v, a, kt, kv_motor, int_res)
+        V = calculate_dynamic_voltage(friction_torque*signum(v)+gravity_torque, inertia, v, a, kt, kv_motor, int_res)
         data.append(LoggedSample(x, v, a, V))
 
     return data

@@ -7,9 +7,10 @@ from .gains import FeedforwardGains
 
 class DynamicSolver:
 
-    def __init__(self, ks: float, kv: float) -> None:
+    def __init__(self, ks: float, kv: float, kg: float) -> None:
         self.ks = ks
         self.kv = kv
+        self.kg = kg
         self.problem = Problem()
         self.ka = self.problem.decision_variable()
         self.problem.subject_to(self.ka >= 0)
@@ -17,7 +18,7 @@ class DynamicSolver:
     def init_data(self, data: list[LoggedSample]) -> None:
         J = 0
         for sample in data:
-            u_pred = eq.calculate_feedforward(self.ks, self.kv, self.ka, sample.velocity, sample.acceleration)
+            u_pred = eq.calculate_feedforward(self.ks, self.kv, self.ka,self.kg, sample.velocity, sample.acceleration)
             u = sample.voltage
             J += pow(u_pred-u, 2)
 
@@ -29,4 +30,4 @@ class DynamicSolver:
             # TODO: Log
             return None
 
-        return FeedforwardGains(self.ks, self.kv, self.ka.value())
+        return FeedforwardGains(self.ks, self.kv, self.ka.value(), self.kg)

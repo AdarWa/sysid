@@ -6,7 +6,7 @@ from core.feedforward.dynamic_solver import DynamicSolver
 from core.sample.logged_sample import LoggedSample
 
 
-def plot_dynamic_identification(data: list[LoggedSample], ks: float, kv: float, ka: float):
+def plot_dynamic_identification(data: list[LoggedSample], ks: float, kv: float, ka: float, kg: float):
     times = np.array([i * 0.005 for i in range(len(data))])
     velocities = np.array([s.velocity for s in data])
     accelerations = np.array([s.acceleration for s in data])
@@ -16,7 +16,7 @@ def plot_dynamic_identification(data: list[LoggedSample], ks: float, kv: float, 
     v_signs[velocities == 0] = 1.0
 
     # Isolate the voltage responsible purely for acceleration
-    quasistatic_voltage = (ks * v_signs) + (kv * velocities)
+    quasistatic_voltage = (ks * v_signs) + (kv * velocities) + kg
     accel_voltages = voltages - quasistatic_voltage
     predicted_accel_voltages = ka * accelerations
 
@@ -59,8 +59,8 @@ def plot_dynamic_identification(data: list[LoggedSample], ks: float, kv: float, 
 
 def test_dynamic():
     data = make_dynamic_step_data(5)
-    solver = DynamicSolver(0.1, 10)
+    solver = DynamicSolver(0.1, 10, 0.05)
     solver.init_data(data)
     gains = solver.solve()
     if gains:
-        plot_dynamic_identification(data, gains.ks, gains.kv, gains.ka)
+        plot_dynamic_identification(data, gains.ks, gains.kv, gains.ka, gains.kg)
