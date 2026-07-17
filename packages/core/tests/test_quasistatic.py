@@ -6,7 +6,7 @@ from core.feedforward.quasistatic_solver import QuasistaticSolver
 from core.sample.logged_sample import LoggedSample
 
 
-def plot_quasistatic_identification(data: list[LoggedSample], ks: float, kv: float):
+def plot_quasistatic_identification(data: list[LoggedSample], ks: float, kv: float, kg: float):
     # Unpack data into numpy arrays
     times = np.array([i * 0.005 for i in range(len(data))])
     velocities = np.array([s.velocity for s in data])
@@ -15,7 +15,7 @@ def plot_quasistatic_identification(data: list[LoggedSample], ks: float, kv: flo
     # Calculate model predictions and residuals
     v_signs = np.sign(velocities)
     v_signs[velocities == 0] = 1.0  # Handle rest condition
-    predicted_voltages = ks * v_signs + kv * velocities
+    predicted_voltages = ks * v_signs + kv * velocities + kg
     residuals = voltages - predicted_voltages
 
     # Create a 1x3 dashboard figure
@@ -24,7 +24,7 @@ def plot_quasistatic_identification(data: list[LoggedSample], ks: float, kv: flo
 
     # 1. Voltage vs. Velocity (The linear regression model)
     ax1.scatter(velocities, voltages, color='blue', alpha=0.3, label='Logged Telemetry', s=10)
-    ax1.plot(velocities, predicted_voltages, color='red', linewidth=2, label=f'Model: V = {ks:.2f} + {kv:.2f}v')
+    ax1.plot(velocities, predicted_voltages, color='red', linewidth=2, label=f'Model: V = {ks:.2f} + {kv:.2f}v + {kg:.2f}')
     ax1.set_title('Voltage vs. Velocity')
     ax1.set_xlabel('Velocity (unit/s)')
     ax1.set_ylabel('Voltage (V)')
@@ -52,10 +52,10 @@ def plot_quasistatic_identification(data: list[LoggedSample], ks: float, kv: flo
     plt.show()
 
 def test_quas():
-    data = make_const_accel_data(0,0,0.001, 5)
-    data += make_const_accel_data(data[-1].position, data[-1].velocity, -0.001, 5)
+    data = make_const_accel_data(0,0,0.1, 5)
+    data += make_const_accel_data(data[-1].position, data[-1].velocity, -0.1, 5)
     solver = QuasistaticSolver()
     solver.init_data(data)
     gains = solver.solve()
     if gains:
-        plot_quasistatic_identification(data, gains.ks, gains.kv)
+        plot_quasistatic_identification(data, gains.ks, gains.kv, gains.kg)

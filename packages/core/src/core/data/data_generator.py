@@ -1,8 +1,6 @@
 from math import exp
-from typing import Any
 
-import numpy as np
-
+from core.feedforward.eq import signum
 from core.sample.logged_sample import LoggedSample
 
 
@@ -39,13 +37,17 @@ def make_const_accel_data(x0: float, v0: float, a: float, time: float, dt: float
     int_res = 0.02
 
     friction_torque = 0.5
+    mass = 0.5 # kg
+    g = 9.81
+    dam_radius = 0.05 # m
+    gravity_torque = mass*g*dam_radius
 
     for i in range(0, int(time/dt)):
         t = i*dt
         x = x0+v0*t+0.5*a*t**2
         v = v0+a*t
 
-        V = calculate_quas_voltage(friction_torque, v, kt, kv_motor, int_res)
+        V = calculate_quas_voltage(friction_torque*signum(v) + gravity_torque, v, kt, kv_motor, int_res)
         data.append(LoggedSample(x,v,a,V))
     return data
 

@@ -5,5 +5,5 @@ def signum(x):
         return -1
     return 0
 
-def calculate_feedforward(ks, kv, ka, v, a):
-    return ks * signum(v) + kv * v + ka * a
+def calculate_feedforward(ks, kv, ka, kg, v, a):
+    return ks * signum(v) + kv * v + ka * a + kg
