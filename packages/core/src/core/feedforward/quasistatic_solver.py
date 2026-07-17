@@ -10,8 +10,8 @@ class QuasistaticSolver:
     def __init__(self) -> None:
         """
         Solver class for the quasistatic part of the motion.
-        Solves for K_s and K_v. The dynamic solver can then
-        be used after in order to find K_a based on the found K_s, K_v.
+        Solves for K_s, K_v, and K_g. The dynamic solver can then
+        be used after in order to find K_a based on the found K_s, K_v, K_g.
         """
         self.problem = Problem()
         self.ks, self.kv, self.kg = self.problem.decision_variable(3)
@@ -22,7 +22,7 @@ class QuasistaticSolver:
     def init_data(self, data: list[LoggedSample]) -> None:
         J = 0
         for sample in data:
-            # The purpose of the quasistatic test is to find K_v and K_s, this can be easily done when the acceleration is zero.
+            # The purpose of the quasistatic test is to find K_v, K_s and K_g , this can be easily done when the acceleration is zero.
             # The quasistatic part must have an acceleration be as close as it can to zero.
             u_pred = eq.calculate_feedforward(self.ks, self.kv, 0, self.kg, sample.velocity, 0)
             u = sample.voltage
