@@ -2,7 +2,10 @@
 name = "sysid"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = ["core"]
+dependencies = [
+    "core",
+    "scipy-stubs~=1.18.0",
+]
 
 [tool.uv.sources]
 core = { workspace = true }
