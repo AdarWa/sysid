@@ -22,7 +22,7 @@ namespace sysid {
 
     public:
         explicit QuasistaticSolver(const System& system);
-        void putData(std::shared_ptr<SampleVector> log);
+        void putData(const std::shared_ptr<SampleVector>& log);
         FeedforwardGains solve();
     };
 } // sysid

@@ -12,6 +12,8 @@ namespace sysid {
         kv = problem.decision_variable();
         kg = problem.decision_variable();
 
+        // TODO: Make initial guesses
+
         // constraints
         problem.subject_to(ks >= 0);
         problem.subject_to(kv >= 0);
@@ -24,19 +26,16 @@ namespace sysid {
         }
     }
 
-    void QuasistaticSolver::putData(std::shared_ptr<SampleVector> log) {
+    void QuasistaticSolver::putData(const std::shared_ptr<SampleVector>& log) {
         slp::Variable<double> J = 0;
         for (size_t i = 0; i < log->N; i++) {
             // The purpose of the quasistatic test is to find K_v, K_s and K_g , this can be easily done when the acceleration is zero.
             // The quasistatic part must have an acceleration be as close as it can to zero.
-            auto& velocity = log->y_meas(i);
-            if (system.systemType == SystemType::POSITIONAL) {
-                velocity = log->dydt_meas(i);
-            }
+            const double velocity = log->getVelocity(system.systemType, i);
 
             double theta = 0;
             if (system.gravityType == GravityType::ARM && system.systemType == SystemType::POSITIONAL) {
-                theta = log->y_meas(i);
+                theta = log->getPosition(system.systemType, i);
             }
 
             auto u_pred = calculateFeedforward(ks, kv, 0, kg, velocity, 0, theta, system.gravityType);
