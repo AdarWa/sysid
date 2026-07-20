@@ -51,11 +51,11 @@ class CostFeedbackSolver:
         self.problem = Problem()
         self.kp, self.ki, self.kd = self.problem.decision_variable(3)
 
-    def calc_cost_function(self,gains, w_error=0.8, w_cost=0.3, w_aggression=0.2):
+    def calc_cost_function(self,gains, w_error=1, w_cost=0.0, w_aggression=0.0):
         y, u, e = simulate_closed_loop(gains, self.K, self.tau, self.theta, self.dt, self.N)
 
         # Integral of Squared Error penalizes tracking deviation from setpoint
-        ise = np.sum(e ** 2) * self.dt
+        ise = np.sum(np.abs(e)*self.t_vec) * self.dt
 
         # Penalizes total control effort to minimize resource consumption
         cost = np.sum(u ** 2) * self.dt
@@ -68,7 +68,7 @@ class CostFeedbackSolver:
 
 
     def fit(self):
-        bounds = [(0.0, 50.0), (0.0, 50.0), (0.0, 10.0)]
+        bounds = [(0.0, 50.0), (0.0, 0.0), (0.0, 10.0)]
         initial_gains = [1.0, 0.0, 0.2]
 
         result = minimize(
