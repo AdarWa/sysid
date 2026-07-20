@@ -56,23 +56,16 @@ namespace sysid {
               dt(dt) {}
     };
 
-    struct SampleVectorLog {
-        SampleVector samples;
-
-        explicit SampleVectorLog(const size_t N)
-            : samples(N) {}
-    };
-
     struct SampleLog{
         std::vector<LoggedSample> samples;
 
         [[nodiscard]]
-        SampleVectorLog vectorize() const {
-            SampleVectorLog log(this->samples.size());
+        SampleVector vectorize() const {
+            SampleVector log(this->samples.size());
             for (auto [i, sample] : std::views::enumerate(samples)) {
-                log.samples.u(i) = sample.u;
-                log.samples.y_meas(i) = sample.y_meas;
-                log.samples.dydt_meas(i) = sample.dydt_meas;
+                log.u(i) = sample.u;
+                log.y_meas(i) = sample.y_meas;
+                log.dydt_meas(i) = sample.dydt_meas;
             }
             return log;
         }
