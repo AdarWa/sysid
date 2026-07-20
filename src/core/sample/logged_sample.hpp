@@ -53,7 +53,11 @@ namespace sysid {
         System(const SystemType system_type, const GravityType gravity_type, const double dt)
             : systemType(system_type),
               gravityType(gravity_type),
-              dt(dt) {}
+              dt(dt) {
+            if (gravityType == GravityType::ARM && systemType != SystemType::POSITIONAL) {
+                throw std::runtime_error("An ARM system must be controlled by a positional system!");
+            }
+        }
     };
 
     struct SampleLog{
