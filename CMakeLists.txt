@@ -21,5 +21,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Sleipnir)
 
-target_link_libraries(sysid PUBLIC Sleipnir::Sleipnir)
+FetchContent_Declare(
+        Eigen3
+        GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+        GIT_TAG origin/master
+)
+set(EIGEN_BUILD_DOC OFF CACHE INTERNAL "")
+set(BUILD_TESTING OFF CACHE INTERNAL "")
+FetchContent_MakeAvailable(Eigen3)
+
+target_link_libraries(sysid PUBLIC Sleipnir::Sleipnir Eigen3::Eigen)
 
