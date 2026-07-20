@@ -10,7 +10,6 @@ from core.sample.logged_sample import LoggedSample
 def fopdt_dynamics(t, K, tau, theta):
     # Softplus provides a continuously differentiable approximation for max(0.0, t - theta)
     t_diff = t - theta
-    print(type(t_diff))
     t_eff = log(1.0 + exp(20.0 * t_diff)) / 20.0
 
     smooth_step = 1.0 / (1.0 + exp(-50.0 * t_diff))
@@ -31,8 +30,7 @@ class FOPDTSolver:
         K = problem.decision_variable()
         tau = problem.decision_variable()
         theta = problem.decision_variable()
-
-        K.set_value(self.y_meas[-1])
+        K.set_value(self.y_meas[-1].astype(float))
         tau.set_value(1.0)
         theta.set_value(0.1)
 

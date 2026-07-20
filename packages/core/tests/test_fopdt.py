@@ -8,7 +8,7 @@ from core.sample.logged_sample import LoggedSample
 def test_fopdt():
     dt = 0.05
     time_horizon = np.arange(0, 10, dt)
-    true_velocity = fopdt_dynamics(time_horizon, K=3.5, tau=1.2, theta=0.4) # TODO: iterate
+    true_velocity = np.vectorize(lambda t: fopdt_dynamics(t, K=3.5, tau=1.2, theta=0.4).value())(time_horizon)
     noisy_velocity = true_velocity + np.random.normal(0.0, 0.05, len(time_horizon))
 
     sample_log = [
@@ -24,9 +24,7 @@ def test_fopdt():
         K_fit, tau_fit, theta_fit = fit_result.x
     else:
         K_fit, tau_fit, theta_fit = fit_result
-
-    fitted_velocity = fopdt_dynamics(time_horizon, K=K_fit, tau=tau_fit, theta=theta_fit)
-
+    fitted_velocity = np.vectorize(lambda t: fopdt_dynamics(t, K=K_fit, tau=tau_fit, theta=theta_fit).value())(time_horizon)
     fig, ax = plt.subplots(figsize=(10, 6))
 
     # Scatter plot with reduced opacity prevents dense sample points from hiding the trend lines
