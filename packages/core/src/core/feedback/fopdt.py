@@ -2,6 +2,7 @@ import numpy as np
 from sleipnir.autodiff import log, exp
 from sleipnir.optimization import ExitStatus, Problem
 
+from core.feedback.utils import make_arrays
 from core.sample.logged_sample import LoggedSample
 
 
@@ -16,10 +17,7 @@ def fopdt_dynamics(t, K, tau, theta):
 class FOPDTSolver:
     def __init__(self, data: list[LoggedSample], dt: float):
         self.dt = dt
-        self.N = len(data)
-        self.u = np.array([sample.voltage for sample in data])
-        self.y_meas = np.array([sample.velocity for sample in data])
-        self.t_vec = np.arange(self.N) * self.dt
+        self.N, self.u, self.y_meas, self.t_vec = make_arrays(data, dt)
 
     def fit(self):
         problem = Problem()
