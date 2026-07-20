@@ -7,10 +7,10 @@
 
 #include <concepts>
 
+#include "../sample/logged_sample.hpp"
 #include "sleipnir/autodiff/variable.hpp"
 
 namespace sysid {
-
     template <typename T>
     concept SleipnirCompatible = requires(const T& x) {
             { x } -> std::convertible_to<slp::Variable<double>>;
@@ -19,13 +19,8 @@ namespace sysid {
     template <SleipnirCompatible T>
     T signum(const T& x);
 
-    // template <SignumCompatible T>
-    // concept FeedforwardCompatible = requires(const T& x) {
-    //
-    // };
 
-    template <typename T>
-    T calculateFeedforward(T ks, T kv, T ka, T kg, T v, T a, T theta);
+    slp::Variable<double> calculateFeedforward(slp::Variable<double> ks, slp::Variable<double> kv, slp::Variable<double> ka, slp::Variable<double> kg, slp::Variable<double> v, slp::Variable<double> a, slp::Variable<double> theta, GravityType gravityType);
 }
 
 #endif //SYSID_FEEDFORWARD_HPP

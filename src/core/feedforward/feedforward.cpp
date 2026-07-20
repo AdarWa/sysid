@@ -4,7 +4,6 @@
 
 #include "feedforward.hpp"
 
-#include "../sample/logged_sample.hpp"
 #include "sleipnir/autodiff/variable.hpp"
 
 namespace sysid {
@@ -33,8 +32,7 @@ namespace sysid {
         return 0;
     }
 
-    template <SleipnirCompatible T>
-    T calculateFeedforward(T ks, T kv, T ka, T kg, T v, T a, T theta, GravityType gravityType) {
+    slp::Variable<double> calculateFeedforward(slp::Variable<double> ks, slp::Variable<double> kv, slp::Variable<double> ka, slp::Variable<double> kg, slp::Variable<double> v, slp::Variable<double> a, slp::Variable<double> theta, GravityType gravityType) {
         return ks * signum(v) + kv * v + ka * a + calculateGravity(kg, theta, gravityType);
     }
 }
