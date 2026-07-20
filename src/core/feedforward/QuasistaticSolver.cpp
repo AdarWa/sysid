@@ -26,7 +26,7 @@ namespace sysid {
 
     void QuasistaticSolver::putData(std::shared_ptr<SampleVector> log) {
         slp::Variable<double> J = 0;
-        for (int i = 0; i < log->N; i++) {
+        for (size_t i = 0; i < log->N; i++) {
             // The purpose of the quasistatic test is to find K_v, K_s and K_g , this can be easily done when the acceleration is zero.
             // The quasistatic part must have an acceleration be as close as it can to zero.
             auto& velocity = log->y_meas(i);
