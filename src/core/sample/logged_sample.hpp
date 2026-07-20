@@ -45,28 +45,30 @@ namespace sysid {
         NONE      // cos(90deg)
     };
 
-    struct Log {
-        virtual ~Log();
+    struct System {
         SystemType systemType{SystemType::VELOCITY};
         GravityType gravityType{GravityType::NONE};
         double dt{0.0};
+
+        System(const SystemType system_type, const GravityType gravity_type, const double dt)
+            : systemType(system_type),
+              gravityType(gravity_type),
+              dt(dt) {}
     };
 
-    struct SampleVectorLog : Log {
+    struct SampleVectorLog {
         SampleVector samples;
 
         explicit SampleVectorLog(const size_t N)
             : samples(N) {}
     };
 
-    struct SampleLog : Log {
+    struct SampleLog{
         std::vector<LoggedSample> samples;
 
         [[nodiscard]]
         SampleVectorLog vectorize() const {
             SampleVectorLog log(this->samples.size());
-            log.dt = this->dt;
-            log.systemType = this->systemType;
             for (auto [i, sample] : std::views::enumerate(samples)) {
                 log.samples.u(i) = sample.u;
                 log.samples.y_meas(i) = sample.y_meas;
