@@ -39,9 +39,16 @@ namespace sysid {
         VELOCITY
     };
 
+    enum class GravityType {
+        ELEVATOR, // cos(0deg)
+        ARM,      // cos(theta)
+        NONE      // cos(90deg)
+    };
+
     struct Log {
         virtual ~Log();
-        SystemType systemType{SystemType::POSITIONAL};
+        SystemType systemType{SystemType::VELOCITY};
+        GravityType gravityType{GravityType::NONE};
         double dt{0.0};
     };
 
