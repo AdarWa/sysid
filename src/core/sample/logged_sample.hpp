@@ -18,16 +18,18 @@
  *                       for positional systems it will the velocity.
  */
 struct LoggedSample {
-    double u; // e.g. voltage
-    double y_meas; // e.g. velocity
-    double dydt_meas; // e.g. acceleration
+    double u{0.0}; // e.g. voltage
+    double y_meas{0.0}; // e.g. velocity
+    double dydt_meas{0.0}; // e.g. acceleration
 };
 
 struct SampleVector {
-    double N;
+    size_t N{0};
     Eigen::VectorXd u;
     Eigen::VectorXd y_meas;
     Eigen::VectorXd dydt_meas;
+
+    explicit SampleVector(const size_t size) : N(size), u(size), y_meas(size), dydt_meas(size) {}
 };
 
 enum class SystemType {
@@ -37,16 +39,27 @@ enum class SystemType {
 
 struct Log {
     virtual ~Log();
-    SystemType systemType;
-    double dt;
-};
-
-struct SampleLog : Log {
-    std::vector<LoggedSample> samples;
+    SystemType systemType{SystemType::POSITIONAL};
+    double dt{0.0};
 };
 
 struct SampleVectorLog : Log {
     SampleVector samples;
+
+    explicit SampleVectorLog(const size_t N)
+        : samples(N) {}
+};
+
+struct SampleLog : Log {
+    std::vector<LoggedSample> samples;
+
+    [[nodiscard]]
+    SampleVectorLog vectorize() const {
+        SampleVectorLog log(this->samples.size());
+        log.dt = this->dt;
+        log.systemType = this->systemType;
+        return log;
+    }
 };
 
 #endif //SYSID_LOGGED_SAMPLE_HPP
