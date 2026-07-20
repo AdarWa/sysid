@@ -1,5 +1,3 @@
-import math
-
 import numpy as np
 from sleipnir.autodiff import log, exp
 from sleipnir.optimization import ExitStatus, Problem
@@ -8,7 +6,6 @@ from core.sample.logged_sample import LoggedSample
 
 
 def fopdt_dynamics(t, K, tau, theta):
-    # Softplus provides a continuously differentiable approximation for max(0.0, t - theta)
     t_diff = t - theta
     t_eff = log(1.0 + exp(20.0 * t_diff)) / 20.0
 

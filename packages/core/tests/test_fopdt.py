@@ -23,7 +23,6 @@ def test_fopdt():
     fitted_velocity = np.vectorize(lambda t: fopdt_dynamics(t, K=K_fit, tau=tau_fit, theta=theta_fit).value())(time_horizon)
     fig, ax = plt.subplots(figsize=(10, 6))
 
-    # Scatter plot with reduced opacity prevents dense sample points from hiding the trend lines
     ax.scatter(
         time_horizon,
         noisy_velocity,
