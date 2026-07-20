@@ -20,7 +20,7 @@ namespace sysid {
     T signum(const T& x);
 
 
-    slp::Variable<double> calculateFeedforward(slp::Variable<double> ks, slp::Variable<double> kv, slp::Variable<double> ka, slp::Variable<double> kg, slp::Variable<double> v, slp::Variable<double> a, slp::Variable<double> theta, GravityType gravityType);
+    slp::Variable<double> calculateFeedforward(const slp::Variable<double>& ks, const slp::Variable<double>& kv, const slp::Variable<double>& ka, const slp::Variable<double>& kg, const slp::Variable<double>& v, const slp::Variable<double>& a, const slp::Variable<double>& theta, GravityType gravityType);
 }
 
 #endif //SYSID_FEEDFORWARD_HPP
