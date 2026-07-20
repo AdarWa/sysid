@@ -19,11 +19,7 @@ def test_fopdt():
     solver = FOPDTSolver(sample_log, dt)
     fit_result = solver.fit()
 
-    # Accommodate solvers returning either a SciPy OptimizeResult or a raw tuple
-    if hasattr(fit_result, "x"):
-        K_fit, tau_fit, theta_fit = fit_result.x
-    else:
-        K_fit, tau_fit, theta_fit = fit_result
+    K_fit, tau_fit, theta_fit = fit_result.x
     fitted_velocity = np.vectorize(lambda t: fopdt_dynamics(t, K=K_fit, tau=tau_fit, theta=theta_fit).value())(time_horizon)
     fig, ax = plt.subplots(figsize=(10, 6))
 
