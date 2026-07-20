@@ -68,8 +68,37 @@ namespace sysid {
         Eigen::VectorXd u;
         Eigen::VectorXd y_meas;
         Eigen::VectorXd dydt_meas;
+        Eigen::VectorXd dydt2_meas;
 
-        explicit SampleVector(const size_t size) : N(size), u(size), y_meas(size), dydt_meas(size) {}
+        explicit SampleVector(const size_t size) : N(size), u(size), y_meas(size), dydt_meas(size), dydt2_meas(size) {}
+
+        double getPosition(const SystemType& systemType, const size_t index) const {
+            if (systemType == SystemType::POSITIONAL) {
+                return y_meas(index);
+            }
+            return 0; // on velocity system
+        }
+
+        double getVelocity(const SystemType& systemType, const size_t index) const {
+            if (systemType == SystemType::POSITIONAL) {
+                return dydt_meas(index);
+            }
+            return y_meas(index); // on velocity system
+        }
+
+        double getAcceleration(const SystemType& systemType, const size_t index) const {
+            if (systemType == SystemType::POSITIONAL) {
+                return dydt2_meas(index);
+            }
+            return dydt_meas(index); // on velocity system
+        }
+
+        double getJerk(const SystemType& systemType, const size_t index) const {
+            if (systemType == SystemType::POSITIONAL) {
+                return 0; // jerk is negligible on positional systems
+            }
+            return dydt2_meas(index); // on velocity system
+        }
     };
 
     enum class GravityType {
@@ -103,6 +132,7 @@ namespace sysid {
                 log.u(i) = sample.u;
                 log.y_meas(i) = sample.y_meas;
                 log.dydt_meas(i) = sample.dydt_meas;
+                log.dydt2_meas(i) = sample.dydt2_meas;
             }
             return log;
         }
