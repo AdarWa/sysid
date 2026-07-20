@@ -4,6 +4,7 @@
 #ifndef SYSID_LOGGED_SAMPLE_HPP
 #define SYSID_LOGGED_SAMPLE_HPP
 #include <vector>
+#include <ranges>
 #include <Eigen/Eigen>
 
 /**
@@ -58,6 +59,11 @@ struct SampleLog : Log {
         SampleVectorLog log(this->samples.size());
         log.dt = this->dt;
         log.systemType = this->systemType;
+        for (auto [i, sample] : std::views::enumerate(samples)) {
+            log.samples.u(i) = sample.u;
+            log.samples.y_meas(i) = sample.y_meas;
+            log.samples.dydt_meas(i) = sample.dydt_meas;
+        }
         return log;
     }
 };
