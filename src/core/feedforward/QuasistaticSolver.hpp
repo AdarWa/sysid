@@ -18,11 +18,12 @@ namespace sysid {
     private:
         slp::Problem<double> problem;
         slp::Variable<double> ks, kv, kg;
+        const System& system;
 
     public:
-        explicit QuasistaticSolver();
-        void putData(std::shared_ptr<SampleVectorLog> log);
-        std::optional<FeedforwardGains> solve();
+        explicit QuasistaticSolver(const System& system);
+        void putData(std::shared_ptr<SampleVector> log);
+        FeedforwardGains solve();
     };
 } // sysid
 
