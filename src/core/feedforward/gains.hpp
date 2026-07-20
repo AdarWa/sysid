@@ -14,10 +14,6 @@ namespace sysid {
         double ka;
         double kg;
         GravityType gravity;
-
-        FeedforwardGains(const double ks, const double kv, const double ka, const double kg, const GravityType gravity)
-            : ks(ks), kv(kv), ka(ka), kg(kg), gravity(gravity) {
-        }
     };
 }
 
