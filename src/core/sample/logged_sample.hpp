@@ -8,6 +8,12 @@
 #include <Eigen/Eigen>
 
 namespace sysid {
+
+    enum class SystemType {
+        POSITIONAL,
+        VELOCITY
+    };
+
     /**
      * A struct representing a sample
      *
@@ -18,11 +24,43 @@ namespace sysid {
      *
      * dydt_meas: The derivative of the output. for a velocity system this will be the acceleration.
      *                       for positional systems it will the velocity.
+     *
+     * dydt2_meas: The second derivative of the output. for a velocity system this will be the jerk.
+     *                       for positional systems it will the acceleration.
      */
     struct LoggedSample {
         double u{0.0}; // e.g. voltage
-        double y_meas{0.0}; // e.g. velocity
-        double dydt_meas{0.0}; // e.g. acceleration
+        double y_meas{0.0}; // e.g. position
+        double dydt_meas{0.0}; // e.g. velocity
+        double dydt2_meas{0.0}; // e.g. acceleration
+
+        double getPosition(const SystemType& systemType) const {
+            if (systemType == SystemType::POSITIONAL) {
+                return y_meas;
+            }
+            return 0; // on velocity system
+        }
+
+        double getVelocity(const SystemType& systemType) const {
+            if (systemType == SystemType::POSITIONAL) {
+                return dydt_meas;
+            }
+            return y_meas; // on velocity system
+        }
+
+        double getAcceleration(const SystemType& systemType) const {
+            if (systemType == SystemType::POSITIONAL) {
+                return dydt2_meas;
+            }
+            return dydt_meas; // on velocity system
+        }
+
+        double getJerk(const SystemType& systemType) const {
+            if (systemType == SystemType::POSITIONAL) {
+                return 0; // jerk is negligible on positional systems
+            }
+            return dydt2_meas; // on velocity system
+        }
     };
 
     struct SampleVector {
@@ -32,11 +70,6 @@ namespace sysid {
         Eigen::VectorXd dydt_meas;
 
         explicit SampleVector(const size_t size) : N(size), u(size), y_meas(size), dydt_meas(size) {}
-    };
-
-    enum class SystemType {
-        POSITIONAL,
-        VELOCITY
     };
 
     enum class GravityType {
