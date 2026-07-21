@@ -28,7 +28,7 @@ namespace sysid {
     }
 
     void FOPDTSolver::makeCostFunction(const std::shared_ptr<SampleVector>& log) {
-        dvar J = 0;
+        J = 0;
         for (auto [idx, y_meas] : std::views::enumerate(log->y_meas)) {
             const dvar t = idx * system.dt;
             dvar y_pred = fopdt_dynamics(t, K, tau, theta);
@@ -56,15 +56,20 @@ namespace sysid {
         makeCostFunction(log);
     }
 
-    FOPDTGains FOPDTSolver::solve() {
+    OptimizationResult<OLSMetrics, FOPDTGains> FOPDTSolver::solve() {
         if (const slp::ExitStatus status = problem.solve(); status != slp::ExitStatus::SUCCESS) {
             throw std::runtime_error("FOPDT solver could not converge to a solution!");
         }
-
-        return FOPDTGains {
-            .K = K.value(),
-            .tau = tau.value(),
-            .theta = theta.value()
+        return OptimizationResult<OLSMetrics, FOPDTGains> {
+            {
+                0,
+                J.value()
+            },
+            {
+                K.value(),
+                tau.value(),
+                theta.value()
+            }
         };
     }
 } // sysid
