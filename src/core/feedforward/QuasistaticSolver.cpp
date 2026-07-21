@@ -27,7 +27,7 @@ namespace sysid {
     }
 
     void QuasistaticSolver::putData(const std::shared_ptr<SampleVector>& log) {
-        slp::Variable<double> J = 0;
+        J = 0;
         for (size_t i = 0; i < log->N; i++) {
             // The purpose of the quasistatic test is to find K_v, K_s and K_g , this can be easily done when the acceleration is zero.
             // The quasistatic part must have an acceleration be as close as it can to zero.
@@ -46,16 +46,21 @@ namespace sysid {
         problem.minimize(J);
     }
 
-    FeedforwardGains QuasistaticSolver::solve() {
+    OptimizationResult<OLSMetrics, FeedforwardGains> QuasistaticSolver::solve() {
         if (const slp::ExitStatus status = problem.solve(); status != slp::ExitStatus::SUCCESS) {
             throw std::runtime_error("Quasistatic solver could not converge to a solution!");
         }
-        return FeedforwardGains{
-            .ks = ks.value(),
-            .kv = kv.value(),
-            .ka = 0,
-            .kg = kg.value(),
-            .gravity = system.gravityType,
+        return OptimizationResult<OLSMetrics, FeedforwardGains>{
+            {
+                0,
+                J.value()
+            },{
+            ks.value(),
+            kv.value(),
+            0,
+            kg.value(),
+                system.gravityType
+            }
         };
     }
 } // sysid

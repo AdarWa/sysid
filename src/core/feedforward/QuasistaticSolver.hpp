@@ -5,6 +5,7 @@
 #ifndef SYSID_QUASISTATICSOLVER_HPP
 #define SYSID_QUASISTATICSOLVER_HPP
 #include "gains.hpp"
+#include "../optimization/Metrics.hpp"
 #include "../sample/logged_sample.hpp"
 #include "sleipnir/optimization/problem.hpp"
 
@@ -18,12 +19,13 @@ namespace sysid {
     private:
         slp::Problem<double> problem;
         slp::Variable<double> ks, kv, kg;
+        slp::Variable<double> J = 0;
         const System& system;
 
     public:
         explicit QuasistaticSolver(const System& system);
         void putData(const std::shared_ptr<SampleVector>& log);
-        FeedforwardGains solve();
+        OptimizationResult<OLSMetrics, FeedforwardGains> solve();
     };
 } // sysid
 
