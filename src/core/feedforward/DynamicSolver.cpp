@@ -18,7 +18,7 @@ namespace sysid {
     }
 
     void DynamicSolver::putData(const std::shared_ptr<SampleVector>& log) {
-        slp::Variable<double> J = 0;
+        J = 0;
         for (size_t i = 0; i < log->N; i++) {
             const double velocity = log->getVelocity(system.systemType, i);
             const double acceleration = log->getAcceleration(system.systemType, i);
@@ -36,16 +36,21 @@ namespace sysid {
         problem.minimize(J);
     }
 
-    FeedforwardGains DynamicSolver::solve() {
+    OptimizationResult<OLSMetrics, FeedforwardGains> DynamicSolver::solve() {
         if (const slp::ExitStatus status = problem.solve(); status != slp::ExitStatus::SUCCESS) {
             throw std::runtime_error("Dynamic solver could not converge to a solution!");
         }
-        return FeedforwardGains{
-            .ks = quasistaticGains.ks,
-            .kv = quasistaticGains.kv,
-            .ka = ka.value(),
-            .kg = quasistaticGains.kg,
-            .gravity = system.gravityType,
+        return OptimizationResult<OLSMetrics, FeedforwardGains>{
+            {
+                0,
+                J.value()
+            }, {
+              quasistaticGains.ks,
+              quasistaticGains.kv,
+              ka.value(),
+              quasistaticGains.kg,
+                system.gravityType,
+            }
         };
     }
 } // sysid
