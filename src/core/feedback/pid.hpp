@@ -7,16 +7,16 @@
 
 #include "fopdt.hpp"
 #include "../optimization/OptimizationResult.hpp"
+#include "../sample/logged_sample.hpp"
 
 namespace sysid {
-    template <NumericCompatible T>
     struct PIDGains : Gains {
-        T kp{0.0};
-        T ki{0.0};
-        T kd{0.0};
+        double kp{0.0};
+        double ki{0.0};
+        double kd{0.0};
 
         PIDGains() = default;
-        PIDGains(const T kp, const T ki, const T kd) : kp(kp), ki(ki), kd(kd) {}
+        PIDGains(const double kp, const double ki, const double kd) : kp(kp), ki(ki), kd(kd) {}
     };
 
     struct FeedbackSimulationVector {
@@ -25,8 +25,7 @@ namespace sysid {
         Eigen::VectorXd e;
     };
 
-    template <NumericCompatible PID, NumericCompatible FOPDT>
-    FeedbackSimulationVector simulate_fopdt_pid_feedback(const PIDGains<PID>& gains, const FOPDTGains<FOPDT>& fopdt_gains, const double dt, const size_t N,
+    FeedbackSimulationVector simulate_fopdt_pid_feedback(const PIDGains& gains, const FOPDTGains& fopdt_gains, const double dt, const size_t N,
         const double setpoint, const double input_max);
 }
 
