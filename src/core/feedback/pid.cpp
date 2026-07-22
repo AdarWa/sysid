@@ -7,7 +7,9 @@
 #include "../math/RollingBuffer.hpp"
 
 namespace sysid {
-    FeedbackSimulationVector simulate_fopdt_pid_feedback(const PIDGains& gains, const FOPDTGains& fopdt_gains, const double dt, const size_t N,
+
+    template <NumericCompatible PID, NumericCompatible FOPDT>
+    FeedbackSimulationVector simulate_fopdt_pid_feedback(const PIDGains<PID>& gains, const FOPDTGains<FOPDT>& fopdt_gains, const double dt, const size_t N,
         const double setpoint, const double input_max) {
 
         const int delay_steps = std::max(1, static_cast<int>(fopdt_gains.theta / dt));
