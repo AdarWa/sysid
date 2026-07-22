@@ -101,7 +101,7 @@ namespace sysid {
         }
     };
 
-    using SampleVectorPtr = const std::shared_ptr<SampleVector>&;
+    using SampleVectorPtr = std::shared_ptr<SampleVector>;
 
     enum class GravityType {
         ELEVATOR, // cos(0deg)
