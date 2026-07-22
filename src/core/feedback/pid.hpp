@@ -5,7 +5,9 @@
 #ifndef SYSID_PID_HPP
 #define SYSID_PID_HPP
 
+#include "fopdt.hpp"
 #include "../optimization/OptimizationResult.hpp"
+#include "../sample/logged_sample.hpp"
 
 namespace sysid {
     struct PIDGains : Gains {
@@ -16,6 +18,15 @@ namespace sysid {
         PIDGains() = default;
         PIDGains(const double kp, const double ki, const double kd) : kp(kp), ki(ki), kd(kd) {}
     };
+
+    struct FeedbackSimulationVector {
+        Eigen::VectorXd y;
+        Eigen::VectorXd u;
+        Eigen::VectorXd e;
+    };
+
+    FeedbackSimulationVector simulate_fopdt_pid_feedback(const PIDGains& gains, const FOPDTGains& fopdt_gains, const double dt, const size_t N,
+        const double setpoint, const double input_max);
 }
 
 #endif //SYSID_PID_HPP
