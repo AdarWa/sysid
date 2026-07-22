@@ -114,6 +114,7 @@ namespace sysid {
         GravityType gravityType{GravityType::NONE};
         double dt{0.0};
 
+        System() = default;
         System(const SystemType system_type, const GravityType gravity_type, const double dt)
             : systemType(system_type),
               gravityType(gravity_type),
