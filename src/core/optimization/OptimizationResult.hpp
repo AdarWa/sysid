@@ -10,10 +10,10 @@
 namespace sysid {
 
     struct Metrics {
-        virtual ~Metrics();
+        virtual ~Metrics() = default;
     };
     struct Gains {
-        virtual ~Gains();
+        virtual ~Gains() = default;
     };
 
     template <std::derived_from<Metrics> T, std::derived_from<Gains> S>
