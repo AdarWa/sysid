@@ -14,10 +14,10 @@ namespace sysid {
         virtual ~IFeedbackSolver() = default;
 
         // Setters
-        virtual void setSystem(const System& system) = 0;
-        virtual void setTuneables(TUNEABLES tuneables) = 0;
-        virtual void setInputs(INPUTS inputs) = 0;
-        virtual void setData(SampleVectorPtr data) = 0;
+        virtual void setSystem(const System& system_) = 0;
+        virtual void setTuneables(TUNEABLES tuneables_) = 0;
+        virtual void setInputs(INPUTS inputs_) = 0;
+        virtual void setData(SampleVectorPtr data_) = 0;
 
         // Getters
         virtual System& getSystem() = 0;
