@@ -24,7 +24,7 @@ namespace sysid {
 
     public:
         explicit QuasistaticSolver(const System& system);
-        void putData(const std::shared_ptr<SampleVector>& log);
+        void putData(SampleVectorPtr log);
         OptimizationResult<OLSMetrics, FeedforwardGains> solve();
     };
 } // sysid

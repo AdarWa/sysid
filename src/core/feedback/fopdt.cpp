@@ -27,7 +27,7 @@ namespace sysid {
         theta = problem.decision_variable();
     }
 
-    void FOPDTSolver::makeCostFunction(const std::shared_ptr<SampleVector>& log) {
+    void FOPDTSolver::makeCostFunction(SampleVectorPtr log) {
         J = 0;
         for (auto [idx, y_meas] : std::views::enumerate(log->y_meas)) {
             const dvar t = idx * system.dt;
@@ -38,7 +38,7 @@ namespace sysid {
         problem.minimize(J);
     }
 
-    void FOPDTSolver::putData(const std::shared_ptr<SampleVector>& log) {
+    void FOPDTSolver::putData(SampleVectorPtr log) {
         K.set_value(log->y_meas(log->N-1)); // Initial guess for K
         tau.set_value(system.dt * log->N / 2); // Initial guess for tau
         theta.set_value(5*system.dt); // Initial guess for theta

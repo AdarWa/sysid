@@ -45,10 +45,10 @@ namespace sysid {
         dvar J;
         const System& system;
 
-        void makeCostFunction(const std::shared_ptr<SampleVector>& log);
+        void makeCostFunction(SampleVectorPtr log);
     public:
         explicit FOPDTSolver(const System& system);
-        void putData(const std::shared_ptr<SampleVector>& log);
+        void putData(SampleVectorPtr log);
         OptimizationResult<OLSMetrics, FOPDTGains> solve();
     };
 } // sysid

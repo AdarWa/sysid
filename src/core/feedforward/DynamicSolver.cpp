@@ -17,7 +17,7 @@ namespace sysid {
         problem.subject_to(ka >= 0);
     }
 
-    void DynamicSolver::putData(const std::shared_ptr<SampleVector>& log) {
+    void DynamicSolver::putData(SampleVectorPtr log) {
         J = 0;
         for (size_t i = 0; i < log->N; i++) {
             const double velocity = log->getVelocity(system.systemType, i);

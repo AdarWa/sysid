@@ -26,7 +26,7 @@ namespace sysid {
         }
     }
 
-    void QuasistaticSolver::putData(const std::shared_ptr<SampleVector>& log) {
+    void QuasistaticSolver::putData(SampleVectorPtr log) {
         J = 0;
         for (size_t i = 0; i < log->N; i++) {
             // The purpose of the quasistatic test is to find K_v, K_s and K_g , this can be easily done when the acceleration is zero.

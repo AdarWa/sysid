@@ -18,10 +18,9 @@ namespace sysid {
         const System& system;
         const FeedforwardGains& quasistaticGains;
 
-
     public:
         explicit DynamicSolver(const System& system, const FeedforwardGains& quasistaticGains);
-        void putData(const std::shared_ptr<SampleVector>& log);
+        void putData(SampleVectorPtr log);
         OptimizationResult<OLSMetrics, FeedforwardGains> solve();
     };
 } // sysid
