@@ -17,7 +17,7 @@ namespace sysid {
         double wA{0.0}; // aggression weight
     };
 
-    class FOPDTCostFeedbackSolver : IFeedbackSolver<OLSMetrics, PIDGains<double>, FOPDTCostFeedbackTuneables, FOPDTGains<double>>{
+    class FOPDTCostFeedbackSolver : IFeedbackSolver<OLSMetrics, PIDGains, FOPDTCostFeedbackTuneables, FOPDTGains>{
     private:
         slp::Problem<double> problem;
         slp::Variable<double> kp, ki, kd;
@@ -26,7 +26,7 @@ namespace sysid {
 
     public:
         explicit FOPDTCostFeedbackSolver();
-        OptimizationResult<OLSMetrics, PIDGains<double>> solve() override;
+        OptimizationResult<OLSMetrics, PIDGains> solve() override;
     };
 } // sysid
 
