@@ -11,19 +11,26 @@
 namespace sysid {
     template <std::derived_from<Metrics> METRICS, std::derived_from<Gains> GAINS, typename TUNEABLES, typename INPUTS>
     class IFeedbackSolver {
+    protected:
+        System system;
+        TUNEABLES tuneables;
+        INPUTS inputs;
+        SampleVectorPtr data;
+
+    public:
         virtual ~IFeedbackSolver() = default;
 
         // Setters
-        virtual void setSystem(const System& system_) = 0;
-        virtual void setTuneables(TUNEABLES tuneables_) = 0;
-        virtual void setInputs(INPUTS inputs_) = 0;
-        virtual void setData(SampleVectorPtr data_) = 0;
+        void setSystem(const System& system_);
+        void setTuneables(TUNEABLES tuneables_);
+        void setInputs(INPUTS inputs_);
+        void setData(SampleVectorPtr data_);
 
         // Getters
-        virtual System& getSystem() = 0;
-        virtual TUNEABLES getTuneables() = 0;
-        virtual INPUTS getInputs() = 0;
-        virtual SampleVectorPtr getData() = 0;
+        System getSystem() const;
+        TUNEABLES getTuneables() const;
+        INPUTS getInputs() const;
+        SampleVectorPtr getData() const;
 
         // Methods
         virtual OptimizationResult<METRICS, GAINS> solve() = 0;
