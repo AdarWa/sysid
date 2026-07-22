@@ -21,14 +21,14 @@ namespace sysid {
     concept NumericCompatible = std::same_as<std::remove_cvref_t<T>, double> ||
                             std::same_as<std::remove_cvref_t<T>, dvar>;
 
-
+    template <NumericCompatible T>
     struct FOPDTGains : Gains {
-        double K{0.0};
-        double tau{0.0};
-        double theta{0.0};
+        T K{0.0};
+        T tau{0.0};
+        T theta{0.0};
 
         FOPDTGains() = default;
-        FOPDTGains(const double K, const double tau, const double theta) : K(K), tau(tau), theta(theta) {}
+        FOPDTGains(const T K, const T tau, const T theta) : K(K), tau(tau), theta(theta) {}
     };
 
     template <NumericCompatible T>
@@ -49,7 +49,7 @@ namespace sysid {
     public:
         explicit FOPDTSolver(const System& system);
         void putData(SampleVectorPtr log);
-        OptimizationResult<OLSMetrics, FOPDTGains> solve();
+        OptimizationResult<OLSMetrics, FOPDTGains<double>> solve();
     };
 } // sysid
 
