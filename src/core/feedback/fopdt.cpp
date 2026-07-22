@@ -56,11 +56,11 @@ namespace sysid {
         makeCostFunction(log);
     }
 
-    OptimizationResult<OLSMetrics, FOPDTGains<double>> FOPDTSolver::solve() {
+    OptimizationResult<OLSMetrics, FOPDTGains> FOPDTSolver::solve() {
         if (const slp::ExitStatus status = problem.solve(); status != slp::ExitStatus::SUCCESS) {
             throw std::runtime_error("FOPDT solver could not converge to a solution!");
         }
-        return OptimizationResult<OLSMetrics, FOPDTGains<double>> {
+        return OptimizationResult<OLSMetrics, FOPDTGains> {
             {
                 0,
                 J.value()
