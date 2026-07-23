@@ -8,24 +8,29 @@
 #include "../../fopdt.hpp"
 #include "../../pid.hpp"
 #include "../../../optimization/Metrics.hpp"
+#include <nlopt.hpp>
 
 namespace sysid {
 
     struct FOPDTCostFeedbackTuneables {
         double wE{0.0}; // error weight
-        double wC{0.0}; // cost weight
+        double wC{0.0}; // input cost weight
         double wA{0.0}; // aggression weight
+        std::optional<double> setpoint;
+        double max_input{12.0};
     };
 
     class FOPDTCostFeedbackSolver : IFeedbackSolver<OLSMetrics, PIDGains, FOPDTCostFeedbackTuneables, FOPDTGains>{
     private:
-        slp::Problem<double> problem;
-        slp::Variable<double> kp, ki, kd;
-        slp::Variable<double> J;
-        void calculateCostFunction();
+        nlopt::opt problem;
+        double simulationTime;
+        double tolerance;
+        void setupProblem();
 
     public:
-        explicit FOPDTCostFeedbackSolver();
+        explicit FOPDTCostFeedbackSolver(const double simulationTime, const double tolerance) : problem(nlopt::algorithm::LN_BOBYQA, 3), simulationTime(simulationTime), tolerance(tolerance) {}
+        double calculateCostFunction(const std::vector<double>& vGains, std::vector<double>& grad, void* _) const;
+        PIDGains getInitialGuess();
         OptimizationResult<OLSMetrics, PIDGains> solve() override;
     };
 } // sysid
