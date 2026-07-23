@@ -17,6 +17,14 @@ namespace sysid {
 
         PIDGains() = default;
         PIDGains(const double kp, const double ki, const double kd) : kp(kp), ki(ki), kd(kd) {}
+
+        std::vector<double> toVector() const {
+            return {kp, ki, kd};
+        }
+
+        static PIDGains fromVector(const std::vector<double>& vector) {
+            return {vector[0], vector[1], vector[2]};
+        }
     };
 
     struct FeedbackSimulationVector {
