@@ -31,6 +31,14 @@ namespace sysid {
         Eigen::VectorXd y;
         Eigen::VectorXd u;
         Eigen::VectorXd e;
+
+        FeedbackSimulationVector normalizeAround(const double setpoint, const double max_u) const {
+            return  {
+                y / setpoint,
+                u / max_u,
+                e / setpoint
+            };
+        }
     };
 
     FeedbackSimulationVector simulate_fopdt_pid_feedback(const PIDGains& gains, const FOPDTGains& fopdt_gains, const double dt, const size_t N,
