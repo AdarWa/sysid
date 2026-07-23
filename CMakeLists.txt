@@ -31,11 +31,6 @@ set(EIGEN_BUILD_DOC OFF CACHE INTERNAL "")
 set(BUILD_TESTING OFF CACHE INTERNAL "")
 FetchContent_MakeAvailable(Eigen3)
 
-set(NLOPT_PYTHON OFF CACHE INTERNAL "")
-set(NLOPT_OCTAVE OFF CACHE INTERNAL "")
-set(NLOPT_MATLAB OFF CACHE INTERNAL "")
-set(NLOPT_GUILE OFF CACHE INTERNAL "")
-set(NLOPT_SWIG OFF CACHE INTERNAL "")
 set(NLOPT_CXX ON CACHE INTERNAL "")
 
 FetchContent_Declare(
@@ -51,5 +46,5 @@ if(NOT TARGET nlopt::nlopt)
     add_library(nlopt::nlopt ALIAS nlopt)
 endif()
 
-target_link_libraries(sysid PUBLIC Sleipnir::Sleipnir Eigen3::Eigen)
+target_link_libraries(sysid PUBLIC Sleipnir::Sleipnir Eigen3::Eigen nlopt::nlopt)
 
