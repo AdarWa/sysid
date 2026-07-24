@@ -36,16 +36,25 @@ namespace sysid {
         return solver->calculateCostFunction(x, grad, nullptr);
     }
 
+    static PIDGains getUpperBound(const FOPDTGains& gains) {
+        const double maxKp = (std::numbers::pi * gains.tau) / (2 * gains.K * gains.theta);
+        return {
+            maxKp,
+            maxKp / gains.theta,
+            maxKp * (gains.tau / 2)
+        };
+    }
+
     void FOPDTCostFeedbackSolver::setupProblem() {
         problem.set_lower_bounds({0.0,0.0,0.0});
-        problem.set_upper_bounds({0.0,0.0,0.0});
+        problem.set_upper_bounds(getUpperBound(inputs).toVector());
 
         problem.set_min_objective(calculateCostFunctionWrapper, this);
         problem.set_xtol_rel(tolerance);
     }
 
-    PIDGains FOPDTCostFeedbackSolver::getInitialGuess() {
-        return {0,0,0};
+    PIDGains FOPDTCostFeedbackSolver::getInitialGuess() const {
+        return estimator.estimatePID(inputs);
     }
 
     OptimizationResult<OLSMetrics, PIDGains> FOPDTCostFeedbackSolver::solve() {

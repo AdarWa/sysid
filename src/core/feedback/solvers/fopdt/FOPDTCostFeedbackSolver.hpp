@@ -10,6 +10,8 @@
 #include "../../../optimization/Metrics.hpp"
 #include <nlopt.hpp>
 
+#include "IPIDEstimatorFOPDT.hpp"
+
 namespace sysid {
 
     struct FOPDTCostFeedbackTuneables {
@@ -25,12 +27,13 @@ namespace sysid {
         nlopt::opt problem;
         double simulationTime;
         double tolerance;
+        const IPIDEstimatorFOPDT& estimator;
         void setupProblem();
 
     public:
-        explicit FOPDTCostFeedbackSolver(const double simulationTime, const double tolerance) : problem(nlopt::algorithm::LN_BOBYQA, 3), simulationTime(simulationTime), tolerance(tolerance) {}
+        explicit FOPDTCostFeedbackSolver(const double simulationTime, const double tolerance, const IPIDEstimatorFOPDT& estimator) : problem(nlopt::algorithm::LN_BOBYQA, 3), simulationTime(simulationTime), tolerance(tolerance), estimator(estimator) {}
         double calculateCostFunction(const std::vector<double>& vGains, std::vector<double>& grad, void* _) const;
-        PIDGains getInitialGuess();
+        PIDGains getInitialGuess() const;
         OptimizationResult<OLSMetrics, PIDGains> solve() override;
     };
 } // sysid
