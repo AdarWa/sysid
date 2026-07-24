@@ -9,7 +9,7 @@
 
 namespace sysid {
     class ZieglerNicholsEstimator : IPIDEstimatorFOPDT {
-        PIDGains estimatePID(const FOPDTGains& gains) override {
+        [[nodiscard]] PIDGains estimatePID(const FOPDTGains& gains) const override {
             double kp = (gains.tau / (gains.K * gains.theta)) * (4.0/3.0 + gains.theta / (gains.tau * 4));
             return {
                 kp,

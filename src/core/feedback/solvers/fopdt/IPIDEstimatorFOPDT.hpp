@@ -10,7 +10,7 @@ namespace sysid {
     class IPIDEstimatorFOPDT {
     public:
         virtual ~IPIDEstimatorFOPDT() = default;
-        virtual PIDGains estimatePID(const FOPDTGains& gains) = 0;
+        [[nodiscard]] virtual PIDGains estimatePID(const FOPDTGains& gains) const = 0;
     };
 }
 
