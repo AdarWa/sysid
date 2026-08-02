@@ -5,6 +5,8 @@
 #define SYSID_LOGGED_SAMPLE_HPP
 #include <vector>
 #include <ranges>
+#include <memory>
+#include <stdexcept>
 #include <Eigen/Eigen>
 
 namespace sysid {
