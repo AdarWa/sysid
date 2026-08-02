@@ -11,7 +11,7 @@ namespace sysid {
     template <NumericCompatible T>
     T fopdt_dynamics(T t, T K, T tau, T theta) {
         T t_diff = t - theta;
-        T t_eff = slp::log(1.0 + slp::exp(20.0 * t_diff) / 20.0);
+        T t_eff = slp::log(1.0 + slp::exp(20.0 * t_diff)) / 20.0;
 
         T smooth_step = 1.0 / (1.0 + slp::exp(-50.0 * t_diff));
         return K * (1.0 - slp::exp(-t_eff / tau)) * smooth_step;
