@@ -9,6 +9,7 @@
 #include "sleipnir/optimization/problem.hpp"
 #include "../sample/logged_sample.hpp"
 #include <concepts>
+#include <type_traits>
 
 #include "../optimization/OptimizationResult.hpp"
 #include "../optimization/Metrics.hpp"
