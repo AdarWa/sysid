@@ -9,7 +9,7 @@
 #include "../../pid.hpp"
 #include "../../../optimization/Metrics.hpp"
 #include <nlopt.hpp>
-
+#include <optional>
 #include "IPIDEstimatorFOPDT.hpp"
 
 namespace sysid {
