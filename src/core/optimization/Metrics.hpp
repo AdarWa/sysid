@@ -14,6 +14,13 @@ namespace sysid {
         OLSMetrics() = default;
         OLSMetrics(const double r2, const double mse) : r2(r2), mse(mse) {}
     };
+
+    struct CostMetric : Metrics {
+        double cost{0.0};
+
+        CostMetric() = default;
+        explicit CostMetric(const double cost) : cost(cost) {}
+    };
 }
 
 #endif //SYSID_METRICS_HPP

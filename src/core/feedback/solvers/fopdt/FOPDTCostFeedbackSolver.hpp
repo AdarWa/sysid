@@ -22,7 +22,7 @@ namespace sysid {
         double max_input{12.0};
     };
 
-    class FOPDTCostFeedbackSolver : IFeedbackSolver<OLSMetrics, PIDGains, FOPDTCostFeedbackTuneables, FOPDTGains>{
+    class FOPDTCostFeedbackSolver : IFeedbackSolver<CostMetric, PIDGains, FOPDTCostFeedbackTuneables, FOPDTGains>{
     private:
         nlopt::opt problem;
         double simulationTime;
@@ -33,8 +33,8 @@ namespace sysid {
     public:
         explicit FOPDTCostFeedbackSolver(const double simulationTime, const double tolerance, const IPIDEstimatorFOPDT& estimator) : problem(nlopt::algorithm::LN_BOBYQA, 3), simulationTime(simulationTime), tolerance(tolerance), estimator(estimator) {}
         double calculateCostFunction(const std::vector<double>& vGains, std::vector<double>& grad, void* _) const;
-        PIDGains getInitialGuess() const;
-        OptimizationResult<OLSMetrics, PIDGains> solve() override;
+        [[nodiscard]] PIDGains getInitialGuess() const;
+        OptimizationResult<CostMetric, PIDGains> solve() override;
     };
 } // sysid
 

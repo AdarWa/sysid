@@ -57,7 +57,7 @@ namespace sysid {
         return estimator.estimatePID(inputs);
     }
 
-    OptimizationResult<OLSMetrics, PIDGains> FOPDTCostFeedbackSolver::solve() {
+    OptimizationResult<CostMetric, PIDGains> FOPDTCostFeedbackSolver::solve() {
         setupProblem();
         std::vector<double> gains = getInitialGuess().toVector();
         double J = 0;
@@ -65,8 +65,8 @@ namespace sysid {
             throw std::runtime_error("FOPDTCostFeedbackSolver could not converge to a solution!");
         }
         return {
-            .metrics = {
-
+            .metrics = CostMetric {
+                J
             },
             .gains = PIDGains::fromVector(gains)
         };
