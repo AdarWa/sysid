@@ -3,12 +3,17 @@
 //
 
 #include <numbers>
+#include <stdexcept>
 #include "FOPDTCostFeedbackSolver.hpp"
 
 namespace sysid {
     double FOPDTCostFeedbackSolver::calculateCostFunction(const std::vector<double>& vGains, std::vector<double>& grad, void* _) const {
         const PIDGains gains = PIDGains::fromVector(vGains);
         const size_t N = simulationTime / system.dt;
+
+        if (N < 5) {
+            throw std::runtime_error("Not enough simulation time! 'N' too small");
+        }
 
         double setpoint = 0.5 * inputs.K * tuneables.max_input;
         if (tuneables.setpoint) {
