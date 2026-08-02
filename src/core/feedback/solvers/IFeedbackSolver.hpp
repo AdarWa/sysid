@@ -35,6 +35,11 @@ namespace sysid {
         // Methods
         virtual OptimizationResult<METRICS, GAINS> solve() = 0;
     };
+
+#define IFEEDBACKSOLVER_INTERNAL_INCLUDE
+#include "IFeedbackSolver.inl"
+#undef IFEEDBACKSOLVER_INTERNAL_INCLUDE
+
 } // sysid
 
 #endif //SYSID_IFEEDBACKSOLVER_HPP
