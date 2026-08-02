@@ -15,7 +15,7 @@ namespace sysid {
 
     RollingBuffer::RollingBuffer(const size_t n): buffer(n), N(n) {
         if (n <= 0) {
-            throw std::runtime_error("Rolling buffer cannot be initialized with size zero or one!");
+            throw std::runtime_error("Rolling buffer cannot be initialized with size zero!");
         }
         this->reset();
     }
