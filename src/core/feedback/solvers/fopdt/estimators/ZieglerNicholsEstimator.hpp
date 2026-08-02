@@ -7,7 +7,8 @@
 #include "../IPIDEstimatorFOPDT.hpp"
 
 namespace sysid {
-    class ZieglerNicholsEstimator : IPIDEstimatorFOPDT {
+    class ZieglerNicholsEstimator : public IPIDEstimatorFOPDT {
+    public:
         [[nodiscard]] PIDGains estimatePID(const FOPDTGains& gains) const override {
             return {
                 1.2 * (gains.tau / (gains.K * gains.theta)),
