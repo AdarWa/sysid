@@ -24,7 +24,7 @@ namespace sysid {
         buffer.setZero();
     }
 
-    void RollingBuffer::push(double value) {
+    void RollingBuffer::push(const double value) {
         shift();
         buffer(N-1) = value;
     }

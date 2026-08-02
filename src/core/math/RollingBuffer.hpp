@@ -20,7 +20,7 @@ namespace sysid {
         explicit RollingBuffer(const size_t n);
 
         void reset();
-        void push(double value);
+        void push(const double value);
         double head();
     };
 } // sysid
