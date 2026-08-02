@@ -4,6 +4,8 @@
 
 #include "pid.hpp"
 
+#include <algorithm>
+#include <utility>
 #include "../math/RollingBuffer.hpp"
 
 namespace sysid {
