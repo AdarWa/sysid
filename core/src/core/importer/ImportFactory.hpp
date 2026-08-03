@@ -31,7 +31,9 @@ namespace sysid {
             static std::unordered_map<std::string, std::unique_ptr<IImporter>> importers = []() {
                 std::unordered_map<std::string, std::unique_ptr<IImporter>> map;
                 // !!! ADD ALL DEFAULT IMPORTERS HERE !!!
+#ifdef WITH_WPIUTIL
                 map["wpilog"] = std::make_unique<WPILogImporter>();
+#endif
                 // !!! END DEFAULT IMPORTERS !!!
                 return map;
             }();

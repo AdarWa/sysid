@@ -43,4 +43,30 @@ if(NOT TARGET nlopt::nlopt)
     add_library(nlopt::nlopt ALIAS nlopt)
 endif()
 
+option(ENABLE_WPIUTIL "Build with wpilog support" ON)
+
+if(ENABLE_WPIUTIL)
+    include(FetchContent)
+
+    # Disable unnecessary allwpilib modules to build only wpiutil
+    set(WPILIB_WITH_CSCORE OFF CACHE BOOL "" FORCE)
+    set(WPILIB_WITH_GUI OFF CACHE BOOL "" FORCE)
+    set(WPILIB_WITH_NTCORE OFF CACHE BOOL "" FORCE)
+    set(WPILIB_WITH_WPIMATH OFF CACHE BOOL "" FORCE)
+    set(WPILIB_WITH_WPILIB OFF CACHE BOOL "" FORCE)
+    set(WPILIB_WITH_TESTS OFF CACHE BOOL "" FORCE)
+    set(WPILIB_WITH_SIMULATION_MODULES OFF CACHE BOOL "" FORCE)
+
+    FetchContent_Declare(
+            wpiutil
+            GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
+            GIT_TAG        main
+    )
+
+    FetchContent_MakeAvailable(wpiutil)
+
+    add_compile_definitions(WITH_WPIUTIL)
+    target_link_libraries(sysid-core PRIVATE wpiutil datalog)
+endif()
+
 target_link_libraries(sysid-core PUBLIC Sleipnir::Sleipnir Eigen3::Eigen nlopt::nlopt)
