@@ -6,25 +6,19 @@
 #include <iostream>
 
 #include "windowing_utils.hpp"
+#include "windows/log_import_window.hpp"
 
+
+using namespace sysid::gui;
 
 int main() {
     GLFWwindow* window = init_window();
     while (!glfwWindowShouldClose(window)) {
         begin_frame();
 
-        ImGui::Begin("Control Panel");
-        ImGui::Text("Application status: Running");
+        generate_log_import_window();
 
-        if (ImGui::Button("Increment Counter")) {
-            std::cout << "Hello!" << std::endl;
-        }
-        ImGui::SameLine();
-        ImGui::Text("Count = %d", 2);
-
-        ImGui::End();
-
-        set_bg_color(window, 20,20,20,10);
+        set_bg_color(window, 0.5,0.5,0.5,0.7);
         end_frame(window);
     }
 

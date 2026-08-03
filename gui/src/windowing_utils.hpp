@@ -6,10 +6,12 @@
 #define SYSID_WINDOWING_UTILS_HPP
 #include <GLFW/glfw3.h>
 
-GLFWwindow* init_window();
-void begin_frame();
-void end_frame(GLFWwindow* window);
-void terminate_window(GLFWwindow* window);
-void set_bg_color(GLFWwindow* window, const float r, const float g, const float b, const float alpha);
+namespace sysid::gui {
+    GLFWwindow* init_window();
+    void begin_frame();
+    void end_frame(GLFWwindow* window);
+    void terminate_window(GLFWwindow* window);
+    void set_bg_color(GLFWwindow* window, const float r, const float g, const float b, const float alpha);
+}
 
 #endif //SYSID_WINDOWING_UTILS_HPP
