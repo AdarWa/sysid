@@ -13,6 +13,8 @@
 
 namespace sysid {
 
+#ifdef WITH_WPIUTIL
+
     using EntryMap = wpi::util::DenseMap<int, wpi::log::StartRecordData>;
 
     static constexpr std::string POSITION_TOPIC = ""; // TODO
@@ -328,6 +330,8 @@ namespace sysid {
 
         return logFile;
     }
+
+#endif
 
     LogFile WPILogImporter::importFile(const std::string& filePath, const bool verbose) {
 #ifndef WITH_WPIUTIL
