@@ -14,7 +14,7 @@ namespace sysid {
     public:
         virtual ~IImporter() = default;
 
-        virtual SampleVectorPtr importFile(std::string filePath) = 0;
+        virtual LogFile importFile(const std::string& filePath, const bool verbose) = 0;
     };
 } // sysid
 

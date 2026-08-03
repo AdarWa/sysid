@@ -16,6 +16,13 @@ namespace sysid {
         VELOCITY
     };
 
+    enum class SystemState {
+        DYNAMIC_FORWARD,
+        DYNAMIC_BACKWARD,
+        QUASISTATIC_FORWARD,
+        QUASISTATIC_BACKWARD
+    };
+
     /**
      * A struct representing a sample
      *
@@ -31,10 +38,13 @@ namespace sysid {
      *                       for positional systems it will the acceleration.
      */
     struct LoggedSample {
+        double timestamp{0.0};
+        SystemState systemState{SystemState::DYNAMIC_FORWARD};
         double u{0.0}; // e.g. voltage
         double y_meas{0.0}; // e.g. position
         double dydt_meas{0.0}; // e.g. velocity
         double dydt2_meas{0.0}; // e.g. acceleration
+
 
         double getPosition(const SystemType& systemType) const {
             if (systemType == SystemType::POSITIONAL) {
@@ -141,6 +151,10 @@ namespace sysid {
             }
             return log;
         }
+    };
+
+    struct LogFile {
+        std::vector<std::pair<SystemState, SampleLog>> steps;
     };
 }
 

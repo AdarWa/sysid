@@ -9,7 +9,7 @@
 namespace sysid {
     class WPILogImporter : public IImporter{
     public:
-        SampleVectorPtr importFile(std::string filePath) override;
+        LogFile importFile(const std::string& filePath, const bool verbose) override;
     };
 } // sysid
 
