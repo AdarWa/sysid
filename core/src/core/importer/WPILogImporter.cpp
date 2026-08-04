@@ -268,6 +268,31 @@ namespace sysid {
         return result;
     }
 
+    static void fillSorted(SampleLog& log, const SystemType& system, const VectorSampleLog& vectorSampleLog) {
+        insertLogSorted<double>(log, vectorSampleLog.position, [&log, &system](const size_t it, const double record) {
+            if (system == SystemType::POSITIONAL)
+                log.samples[it].y_meas = record;
+        });
+
+        insertLogSorted<double>(log, vectorSampleLog.velocity, [&log, &system](const size_t it, const double record) {
+            if (system == SystemType::POSITIONAL)
+                log.samples[it].dydt_meas = record;
+            else
+                log.samples[it].y_meas = record;
+        });
+
+        insertLogSorted<double>(log, vectorSampleLog.accel, [&log, &system](const size_t it, const double record) {
+            if (system == SystemType::POSITIONAL)
+                log.samples[it].dydt2_meas = record;
+            else
+                log.samples[it].dydt_meas = record;
+        });
+
+        insertLogSorted<SystemState>(log, vectorSampleLog.state, [&log](const size_t it, const SystemState record) {
+            log.samples[it].systemState = record;
+        });
+    }
+
     static LogFile handleImport(const std::string& filePath) {
         std::expected<std::unique_ptr<wpi::util::MemoryBuffer>, std::error_code> fileBuffer = wpi::util::MemoryBuffer::GetFile(filePath);
         if (!fileBuffer) {
@@ -297,33 +322,12 @@ namespace sysid {
 
         vectorSampleLog.sortAll();
 
-        SystemType system; // TODO
+        constexpr SystemType system = {}; // TODO
 
         SampleLog log;
         fillVoltageSampleLog(log, vectorSampleLog.voltage);
 
-        insertLogSorted<double>(log, vectorSampleLog.position, [&log, &system](const size_t it, const double record) {
-            if (system == SystemType::POSITIONAL)
-                log.samples[it].y_meas = record;
-        });
-
-        insertLogSorted<double>(log, vectorSampleLog.velocity, [&log, &system](const size_t it, const double record) {
-            if (system == SystemType::POSITIONAL)
-                log.samples[it].dydt_meas = record;
-            else
-                log.samples[it].y_meas = record;
-        });
-
-        insertLogSorted<double>(log, vectorSampleLog.accel, [&log, &system](const size_t it, const double record) {
-            if (system == SystemType::POSITIONAL)
-                log.samples[it].dydt2_meas = record;
-            else
-                log.samples[it].dydt_meas = record;
-        });
-
-        insertLogSorted<SystemState>(log, vectorSampleLog.state, [&log](const size_t it, const SystemState record) {
-            log.samples[it].systemState = record;
-        });
+        fillSorted(log, system, vectorSampleLog);
 
         LogFile logFile;
         logFile.steps = groupByStatePeriods(log);
