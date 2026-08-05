@@ -3,6 +3,7 @@
 
 #ifndef SYSID_LOGGED_SAMPLE_HPP
 #define SYSID_LOGGED_SAMPLE_HPP
+#include <iostream>
 #include <vector>
 #include <ranges>
 #include <memory>
@@ -38,7 +39,7 @@ namespace sysid {
      *                       for positional systems it will the acceleration.
      */
     struct LoggedSample {
-        double timestamp{0.0};
+        int64_t timestamp{0};
         SystemState systemState{SystemState::DYNAMIC_FORWARD};
         double u{0.0}; // e.g. voltage
         double y_meas{0.0}; // e.g. position
@@ -150,6 +151,74 @@ namespace sysid {
                 log.dydt2_meas(i) = sample.dydt2_meas;
             }
             return log;
+        }
+
+        [[nodiscard]]
+        SampleLog alignTimestamps(const int64_t dt) const {
+            if (samples.size() < 5) {
+                throw std::runtime_error("SampleLog too small to align!");
+            }
+            const long tStart = samples[0].timestamp;
+            const long tEnd = samples[samples.size()-1].timestamp;
+            const long duration = tEnd - tStart;
+            size_t vecSize = static_cast<size_t>(duration / dt) + 1;
+
+            SampleLog newLog;
+            newLog.samples.reserve(vecSize);
+            for (size_t i = 0; i < vecSize; i++) {
+                newLog.samples.push_back(LoggedSample(-1, SystemState::DYNAMIC_BACKWARD, 0,0,0,0));
+            }
+
+            for (const auto& sample : samples) {
+                const auto newLogIndex = static_cast<size_t>(sample.timestamp - tStart / dt);
+                if (newLog.samples[newLogIndex].timestamp != -1) {
+                    const long cellTimestamp = static_cast<long>(newLogIndex) * dt;
+                    const long oldDelta = std::abs(newLog.samples[newLogIndex].timestamp - tStart - cellTimestamp);
+                    const long newDelta = std::abs(sample.timestamp - tStart - cellTimestamp);
+                    if (oldDelta < newDelta) {
+                        continue;
+                    }
+                }
+                newLog.samples[newLogIndex] = sample;
+            }
+            // Count invalids at the end of the vector
+            long invalids = 0;
+            for (long i = static_cast<long>(vecSize) - 1; i >= 0; i--) {
+                if (newLog.samples[i].timestamp == -1) {
+                    invalids++;
+                } else {
+                    break;
+                }
+            }
+            std::cout << "Found " << invalids << "invalid data points" << std::endl;
+            if (invalids >= vecSize) {
+                throw std::runtime_error("Got vector full of invalid data points!");
+            }
+            vecSize -= invalids;
+            newLog.samples.resize(vecSize);
+
+            // Iterate over the vector to make sure there are no "holes"
+            long biggestHole = 0;
+            long consecutiveHoles = 0;
+            for (const auto& [i, sample]: std::ranges::views::enumerate(newLog.samples)) {
+                if (sample.timestamp == -1) {
+                    consecutiveHoles++;
+                    if (consecutiveHoles >= 3) {
+                        std::cout << std::format("Found hole in data. <length={}, duration={}, timestamp={}>", consecutiveHoles, consecutiveHoles*dt, (i-consecutiveHoles+1)*dt) << "\n";
+                    }
+                    continue;
+                }
+                if (consecutiveHoles > biggestHole) {
+                    biggestHole = consecutiveHoles;
+                }
+                consecutiveHoles = 0;
+            }
+
+            if (biggestHole*dt > 200) { // ms
+                throw std::runtime_error(std::format("Found a data hole sized {}. Aborting!", biggestHole*dt));
+            }
+
+            return newLog;
         }
     };
 
