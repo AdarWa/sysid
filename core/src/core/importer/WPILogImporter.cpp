@@ -26,6 +26,8 @@ namespace sysid {
     static constexpr std::string DOUBLE_TYPE = "double";
     static constexpr std::string STRING_TYPE = "double";
 
+    static constexpr long WPILIB_DT = 20; // ms
+
     static bool isVerbose = false;
 
     static constexpr double toSeconds(const uint64_t timestamp) {
@@ -336,6 +338,8 @@ namespace sysid {
         fillVoltageSampleLog(log, vectorSampleLog.voltage);
 
         fillSorted(log, system, vectorSampleLog);
+
+        log = log.alignTimestamps(WPILIB_DT);
 
         LogFile logFile;
         logFile.steps = groupByStatePeriods(log);
