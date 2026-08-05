@@ -32,6 +32,10 @@ namespace sysid {
         return static_cast<double>(timestamp) / 1000000.0;
     }
 
+    static constexpr int64_t toMs(const int64_t us) {
+        return us / 1000;
+    }
+
     static SystemState stringToState(const std::string_view& state) {
         static const std::unordered_map<std::string_view, SystemState> stateMap = {
             {"DYNAMIC_FORWARD", SystemState::DYNAMIC_FORWARD},
@@ -182,6 +186,10 @@ namespace sysid {
         };
     }
 
+    template <typename  T>
+    static std::pair<long, T> makeNewSample(const wpi::log::DataLogRecord& record, T value) {
+        return std::make_pair(toMs(record.GetTimestamp()), value);
+    }
 
     static void handleDataRecord(const wpi::log::DataLogRecord& record, const EntryMap& entries, VectorSampleLog& log) {
         if (isVerbose) {
@@ -211,36 +219,36 @@ namespace sysid {
                 parseFailWarning();
                 return;
             }
-            insertPairSorted(log.position, std::make_pair(record.GetTimestamp(), position));
+            insertPairSorted(log.position, makeNewSample(record, position));
         }else if (isVelocityRecord(name, dataType)) {
             double velocity;
             if (!record.GetDouble(&velocity)) {
                 parseFailWarning();
                 return;
             }
-            insertPairSorted(log.velocity, std::make_pair(record.GetTimestamp(), velocity));
+            insertPairSorted(log.velocity, makeNewSample(record, velocity));
         }else if (isAccelRecord(name, dataType)) {
             double accel;
             if (!record.GetDouble(&accel)) {
                 parseFailWarning();
                 return;
             }
-            insertPairSorted(log.accel, std::make_pair(record.GetTimestamp(), accel));
+            insertPairSorted(log.accel, makeNewSample(record, accel));
         }else if (isVoltageRecord(name, dataType)) {
             double voltage;
             if (!record.GetDouble(&voltage)) {
                 parseFailWarning();
                 return;
             }
-            insertPairSorted(log.voltage, std::make_pair(record.GetTimestamp(), voltage));
+            insertPairSorted(log.voltage, makeNewSample(record, voltage));
         }else if (isStateRecord(name, dataType)) {
             std::string_view stateStr;
             if (!record.GetString(&stateStr)) {
                 parseFailWarning();
                 return;
             }
-            SystemState state = stringToState(stateStr);
-            insertPairSorted(log.state, std::make_pair(record.GetTimestamp(), state));
+            const SystemState state = stringToState(stateStr);
+            insertPairSorted(log.state, makeNewSample(record, state));
         }
     }
 
