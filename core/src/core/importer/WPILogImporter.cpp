@@ -107,27 +107,27 @@ namespace sysid {
         }
     }
 
-    static bool isPositionRecord(const std::string& name, const std::string& type) {
+    static bool isPositionRecord(const std::string_view& name, const std::string_view& type) {
         return name == POSITION_TOPIC && type == DOUBLE_TYPE;
     }
 
-    static bool isVelocityRecord(const std::string& name, const std::string& type) {
+    static bool isVelocityRecord(const std::string_view& name, const std::string_view& type) {
         return name == VELOCITY_TOPIC && type == DOUBLE_TYPE;
     }
 
-    static bool isAccelRecord(const std::string& name, const std::string& type) {
+    static bool isAccelRecord(const std::string_view& name, const std::string_view& type) {
         return name == ACCEL_TOPIC && type == DOUBLE_TYPE;
     }
 
-    static bool isVoltageRecord(const std::string& name, const std::string& type) {
+    static bool isVoltageRecord(const std::string_view& name, const std::string_view& type) {
         return name == VOLTAGE_TOPIC && type == DOUBLE_TYPE;
     }
 
-    static bool isStateRecord(const std::string& name, const std::string& type) {
+    static bool isStateRecord(const std::string_view& name, const std::string_view& type) {
         return name == STATE_TOPIC && type == STRING_TYPE;
     }
 
-    static bool isSysIdRecord(const std::string& name, const std::string& type) {
+    static bool isSysIdRecord(const std::string_view& name, const std::string_view& type) {
         return isPositionRecord(name, type) ||
             isVelocityRecord(name, type) ||
                 isAccelRecord(name, type) ||
@@ -208,8 +208,8 @@ namespace sysid {
             std::cout << std::format("<name='{}', type='{}'> [{}]", entry->second.name, entry->second.type, toSeconds(record.GetTimestamp())) << std::endl;
         }
 
-        const auto name = entry->second.name.data();
-        const auto dataType = entry->second.type.data();
+        const auto name = entry->second.name;
+        const auto dataType = entry->second.type;
 
         const auto parseFailWarning = [&name]() {
             std::cerr << std::format("Couldn't parse double for {}", name) << std::endl;
