@@ -41,6 +41,9 @@ namespace sysid {
         }
 
         static void addImporter(const std::string& fileType, std::unique_ptr<IImporter> ptr) {
+            if (!ptr) {
+                throw std::invalid_argument("Importer must not be null!");
+            }
             auto& map = getImporters();
             if (map.contains(fileType)) {
                 throw std::runtime_error(std::format("Format '{}' already exists!", fileType));
