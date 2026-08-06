@@ -249,8 +249,12 @@ namespace sysid {
                 parseFailWarning();
                 return;
             }
-            const SystemState state = stringToState(stateStr);
-            insertPairSorted(log.state, makeNewSample(record, state));
+            try {
+                const SystemState state = stringToState(stateStr);
+                insertPairSorted(log.state, makeNewSample(record, state));
+            }catch (const std::exception& e) {
+                std::cerr << "Exception occurred while parsing system state. Skipping..." << e.what() << std::endl;
+            }
         }
     }
 
