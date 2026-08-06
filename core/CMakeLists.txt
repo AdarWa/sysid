@@ -63,7 +63,7 @@ if(ENABLE_WPIUTIL)
     FetchContent_Declare(
             wpilib
             GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
-            GIT_TAG        main
+            GIT_TAG        817d119e835ac13b7898a1420ea8feb835e247fc
     )
 
     FetchContent_MakeAvailable(wpilib)
