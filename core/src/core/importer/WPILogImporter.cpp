@@ -159,7 +159,7 @@ namespace sysid {
                 &LoggedSample::timestamp
             );
 
-            if (currentIt != log.samples.end() && currentIt->timestamp == timestamp) {
+            if (currentIt != log.samples.end()) {
                 const size_t index = std::distance(log.samples.begin(), currentIt);
                 insertCallback(index, value);
             }
