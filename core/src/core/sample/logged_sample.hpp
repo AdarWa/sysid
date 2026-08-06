@@ -11,7 +11,6 @@
 #include <Eigen/Eigen>
 
 namespace sysid {
-
     enum class SystemType {
         POSITIONAL,
         VELOCITY
@@ -83,7 +82,8 @@ namespace sysid {
         Eigen::VectorXd dydt_meas;
         Eigen::VectorXd dydt2_meas;
 
-        explicit SampleVector(const size_t size) : N(size), u(size), y_meas(size), dydt_meas(size), dydt2_meas(size) {}
+        explicit SampleVector(const size_t size) : N(size), u(size), y_meas(size), dydt_meas(size), dydt2_meas(size) {
+        }
 
         double getPosition(const SystemType& systemType, const size_t index) const {
             if (systemType == SystemType::POSITIONAL) {
@@ -118,8 +118,8 @@ namespace sysid {
 
     enum class GravityType {
         ELEVATOR, // cos(0deg)
-        ARM,      // cos(theta)
-        NONE      // cos(90deg)
+        ARM, // cos(theta)
+        NONE // cos(90deg)
     };
 
     struct System {
@@ -128,6 +128,7 @@ namespace sysid {
         double dt{0.0};
 
         System() = default;
+
         System(const SystemType system_type, const GravityType gravity_type, const double dt)
             : systemType(system_type),
               gravityType(gravity_type),
@@ -138,7 +139,7 @@ namespace sysid {
         }
     };
 
-    struct SampleLog{
+    struct SampleLog {
         std::vector<LoggedSample> samples;
 
         [[nodiscard]]
@@ -159,18 +160,22 @@ namespace sysid {
                 throw std::runtime_error("SampleLog too small to align!");
             }
             const int64_t tStart = samples[0].timestamp;
-            const int64_t tEnd = samples[samples.size()-1].timestamp;
+            const int64_t tEnd = samples[samples.size() - 1].timestamp;
             const int64_t duration = tEnd - tStart;
             size_t vecSize = static_cast<size_t>(duration / dt) + 1;
 
             SampleLog newLog;
             newLog.samples.reserve(vecSize);
             for (size_t i = 0; i < vecSize; i++) {
-                newLog.samples.push_back(LoggedSample(-1, SystemState::DYNAMIC_BACKWARD, 0,0,0,0));
+                newLog.samples.push_back(LoggedSample(-1, SystemState::DYNAMIC_BACKWARD, 0, 0, 0, 0));
             }
 
             for (const auto& sample : samples) {
-                const auto newLogIndex = static_cast<size_t>(sample.timestamp - tStart / dt);
+                const int64_t offset = sample.timestamp - tStart;
+                if (offset < 0 || offset / dt >= static_cast<int64_t>(vecSize)) {
+                    continue; // sample outside the grid
+                }
+                const auto newLogIndex = static_cast<size_t>(offset / dt);
                 if (newLog.samples[newLogIndex].timestamp != -1) {
                     const int64_t cellTimestamp = static_cast<int64_t>(newLogIndex) * dt;
                     const int64_t oldDelta = std::abs(newLog.samples[newLogIndex].timestamp - tStart - cellTimestamp);
@@ -186,7 +191,8 @@ namespace sysid {
             for (int64_t i = static_cast<int64_t>(vecSize) - 1; i >= 0; i--) {
                 if (newLog.samples[i].timestamp == -1) {
                     invalids++;
-                } else {
+                }
+                else {
                     break;
                 }
             }
@@ -200,11 +206,13 @@ namespace sysid {
             // Iterate over the vector to make sure there are no "holes"
             int64_t biggestHole = 0;
             int64_t consecutiveHoles = 0;
-            for (const auto& [i, sample]: std::ranges::views::enumerate(newLog.samples)) {
+            for (const auto& [i, sample] : std::ranges::views::enumerate(newLog.samples)) {
                 if (sample.timestamp == -1) {
                     consecutiveHoles++;
                     if (consecutiveHoles >= 3) {
-                        std::cout << std::format("Found hole in data. <length={}, duration={}, timestamp={}>", consecutiveHoles, consecutiveHoles*dt, (i-consecutiveHoles+1)*dt) << "\n";
+                        std::cout << std::format("Found hole in data. <length={}, duration={}, timestamp={}>",
+                                                 consecutiveHoles, consecutiveHoles * dt,
+                                                 (i - consecutiveHoles + 1) * dt) << "\n";
                     }
                     continue;
                 }
@@ -214,8 +222,9 @@ namespace sysid {
                 consecutiveHoles = 0;
             }
 
-            if (biggestHole*dt > 200) { // ms
-                throw std::runtime_error(std::format("Found a data hole sized {}. Aborting!", biggestHole*dt));
+            if (biggestHole * dt > 200) {
+                // ms
+                throw std::runtime_error(std::format("Found a data hole sized {}. Aborting!", biggestHole * dt));
             }
 
             return newLog;
