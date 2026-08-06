@@ -26,7 +26,7 @@ namespace sysid {
     static constexpr std::string DOUBLE_TYPE = "double";
     static constexpr std::string STRING_TYPE = "string";
 
-    static constexpr long WPILIB_DT = 20; // ms
+    static constexpr int64_t WPILIB_DT = 20; // ms
 
     static bool isVerbose = false;
 
@@ -189,7 +189,7 @@ namespace sysid {
     }
 
     template <typename  T>
-    static std::pair<long, T> makeNewSample(const wpi::log::DataLogRecord& record, T value) {
+    static std::pair<int64_t, T> makeNewSample(const wpi::log::DataLogRecord& record, T value) {
         return std::make_pair(toMs(record.GetTimestamp()), value);
     }
 

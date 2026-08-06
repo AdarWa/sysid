@@ -158,9 +158,9 @@ namespace sysid {
             if (samples.size() < 5) {
                 throw std::runtime_error("SampleLog too small to align!");
             }
-            const long tStart = samples[0].timestamp;
-            const long tEnd = samples[samples.size()-1].timestamp;
-            const long duration = tEnd - tStart;
+            const int64_t tStart = samples[0].timestamp;
+            const int64_t tEnd = samples[samples.size()-1].timestamp;
+            const int64_t duration = tEnd - tStart;
             size_t vecSize = static_cast<size_t>(duration / dt) + 1;
 
             SampleLog newLog;
@@ -172,9 +172,9 @@ namespace sysid {
             for (const auto& sample : samples) {
                 const auto newLogIndex = static_cast<size_t>(sample.timestamp - tStart / dt);
                 if (newLog.samples[newLogIndex].timestamp != -1) {
-                    const long cellTimestamp = static_cast<long>(newLogIndex) * dt;
-                    const long oldDelta = std::abs(newLog.samples[newLogIndex].timestamp - tStart - cellTimestamp);
-                    const long newDelta = std::abs(sample.timestamp - tStart - cellTimestamp);
+                    const int64_t cellTimestamp = static_cast<int64_t>(newLogIndex) * dt;
+                    const int64_t oldDelta = std::abs(newLog.samples[newLogIndex].timestamp - tStart - cellTimestamp);
+                    const int64_t newDelta = std::abs(sample.timestamp - tStart - cellTimestamp);
                     if (oldDelta < newDelta) {
                         continue;
                     }
@@ -182,8 +182,8 @@ namespace sysid {
                 newLog.samples[newLogIndex] = sample;
             }
             // Count invalids at the end of the vector
-            long invalids = 0;
-            for (long i = static_cast<long>(vecSize) - 1; i >= 0; i--) {
+            int64_t invalids = 0;
+            for (int64_t i = static_cast<int64_t>(vecSize) - 1; i >= 0; i--) {
                 if (newLog.samples[i].timestamp == -1) {
                     invalids++;
                 } else {
@@ -198,8 +198,8 @@ namespace sysid {
             newLog.samples.resize(vecSize);
 
             // Iterate over the vector to make sure there are no "holes"
-            long biggestHole = 0;
-            long consecutiveHoles = 0;
+            int64_t biggestHole = 0;
+            int64_t consecutiveHoles = 0;
             for (const auto& [i, sample]: std::ranges::views::enumerate(newLog.samples)) {
                 if (sample.timestamp == -1) {
                     consecutiveHoles++;
