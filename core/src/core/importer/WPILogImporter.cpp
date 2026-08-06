@@ -24,7 +24,7 @@ namespace sysid {
     static constexpr std::string STATE_TOPIC = ""; // TODO
 
     static constexpr std::string DOUBLE_TYPE = "double";
-    static constexpr std::string STRING_TYPE = "double";
+    static constexpr std::string STRING_TYPE = "string";
 
     static constexpr long WPILIB_DT = 20; // ms
 
