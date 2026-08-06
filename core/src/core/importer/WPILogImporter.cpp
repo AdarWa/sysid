@@ -50,7 +50,7 @@ namespace sysid {
             return it->second;
         }
 
-        throw std::invalid_argument(std::format("Unknown system state: ", state));
+        throw std::invalid_argument(std::format("Unknown system state: {}", state));
     }
 
     static void handleStartRecord(const wpi::log::DataLogRecord& record, EntryMap& entries) {
