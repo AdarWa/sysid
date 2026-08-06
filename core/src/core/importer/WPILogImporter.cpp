@@ -148,9 +148,9 @@ namespace sysid {
     template <typename T>
     static void insertLogSorted(const SampleLog& log, const std::vector<std::pair<int64_t, T>>& sampleVec, const std::function<void(size_t, T)>& insertCallback) {
         auto currentIt = log.samples.begin();
+        size_t unmappedCount = 0;
 
         for (const auto& [timestamp, value] : sampleVec) {
-            // Start the binary search from the last place. Cool optimization!
             currentIt = std::ranges::lower_bound(
                 currentIt,
                 log.samples.end(),
@@ -159,10 +159,35 @@ namespace sysid {
                 &LoggedSample::timestamp
             );
 
+            auto matchIt = log.samples.end();
+            int64_t minDiff = WPILIB_DT / 2;
+
             if (currentIt != log.samples.end()) {
-                const size_t index = std::distance(log.samples.begin(), currentIt);
-                insertCallback(index, value);
+                int64_t diff = currentIt->timestamp - timestamp;
+                if (diff <= minDiff) {
+                    matchIt = currentIt;
+                    minDiff = diff;
+                }
             }
+
+            if (currentIt != log.samples.begin()) {
+                const auto prevIt = std::prev(currentIt);
+                int64_t diff = timestamp - prevIt->timestamp;
+                if (diff < minDiff) {
+                    matchIt = prevIt;
+                }
+            }
+
+            if (matchIt != log.samples.end()) {
+                const size_t index = std::distance(log.samples.begin(), matchIt);
+                insertCallback(index, value);
+            } else {
+                unmappedCount++;
+            }
+        }
+
+        if (unmappedCount > 0) {
+            std::cerr << "Unmapped " << unmappedCount << " samples due to missing timestamp in tolerance window." << std::endl;
         }
     }
 
@@ -341,9 +366,9 @@ namespace sysid {
         SampleLog log;
         fillVoltageSampleLog(log, vectorSampleLog.voltage);
 
-        fillSorted(log, system, vectorSampleLog);
-
         log = log.alignTimestamps(WPILIB_DT);
+
+        fillSorted(log, system, vectorSampleLog);
 
         LogFile logFile;
         logFile.steps = groupByStatePeriods(log);
