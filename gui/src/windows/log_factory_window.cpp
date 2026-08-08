@@ -23,7 +23,7 @@ void sysid::gui::generate_log_factory_window() {
 
     static std::optional<std::string> file_path = std::nullopt;
 
-    ImGui::BeginDisabled(!file_path.has_value());
+    ImGui::BeginDisabled(!file_path.has_value() || LogStorage::hasLog());
     if (file_path)
         ImGui::Text("(%s)", file_path->c_str());
     else
@@ -57,6 +57,15 @@ void sysid::gui::generate_log_factory_window() {
     }
 
     ImGui::EndDisabled();
+
+    if (LogStorage::hasLog()) {
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        if (ImGui::Button("Clear Log")) {
+            LogStorage::clearLog();
+        }
+    }
 
     ImGui::End();
 }

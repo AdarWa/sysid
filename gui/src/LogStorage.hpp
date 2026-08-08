@@ -9,11 +9,15 @@
 namespace sysid::gui {
     class LogStorage {
     private:
-        static std::optional<LogFile> log;
+        inline static std::optional<LogFile> log;
     public:
 
         static void setLog(const LogFile& newLog) {
             log = newLog;
+        }
+
+        static void clearLog() {
+            log = std::nullopt;
         }
 
         static bool hasLog() {
