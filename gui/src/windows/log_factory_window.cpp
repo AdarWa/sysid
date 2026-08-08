@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 
+#include "../LogStorage.hpp"
 #include "../windowing_utils.hpp"
 #include "core/importer/ImportFactory.hpp"
 
@@ -46,8 +47,8 @@ void sysid::gui::generate_log_factory_window() {
             ext.erase(0,1); // remove dot
             if (!std::ranges::contains(ImportFactory::getImportableFormats(), ext)) throw std::runtime_error(std::format("Can't find importer for type {}", ext));
 
-            LogFile log = ImportFactory::getImporters()[ext]->importFile(*file_path, verbose);
-
+            const LogFile log = ImportFactory::getImporters()[ext]->importFile(*file_path, verbose);
+            LogStorage::setLog(log);
         }catch (const std::exception& e) {
             ImGui::EndDisabled();
             ImGui::End();
