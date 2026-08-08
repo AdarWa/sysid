@@ -17,14 +17,14 @@ namespace sysid {
 
     using EntryMap = wpi::util::DenseMap<int, wpi::log::StartRecordData>;
 
-    static constexpr std::string POSITION_TOPIC = ""; // TODO
-    static constexpr std::string VELOCITY_TOPIC = ""; // TODO
-    static constexpr std::string ACCEL_TOPIC = ""; // TODO
-    static constexpr std::string VOLTAGE_TOPIC = ""; // TODO
-    static constexpr std::string STATE_TOPIC = ""; // TODO
+    static constexpr std::string_view POSITION_TOPIC = "/Flywheel/Position"; // TODO
+    static constexpr std::string_view VELOCITY_TOPIC = "/Flywheel/Velocity"; // TODO
+    static constexpr std::string_view ACCEL_TOPIC = "/Flywheel/Acceleration"; // TODO
+    static constexpr std::string_view VOLTAGE_TOPIC = "/Flywheel/Voltage"; // TODO
+    static constexpr std::string_view STATE_TOPIC = "/Flywheel/State"; // TODO
 
-    static constexpr std::string DOUBLE_TYPE = "double";
-    static constexpr std::string STRING_TYPE = "string";
+    static constexpr std::string_view DOUBLE_TYPE = "double";
+    static constexpr std::string_view STRING_TYPE = "string";
 
     static constexpr int64_t WPILIB_DT = 20; // ms
 
@@ -358,10 +358,12 @@ namespace sysid {
                 handleDataRecord(record, entries, vectorSampleLog);
             }
         }
-
+        if (vectorSampleLog.voltage.size() < 5) {
+            throw std::runtime_error("VectorSampleLog too small!");
+        }
         vectorSampleLog.sortAll();
 
-        constexpr SystemType system = {}; // TODO
+        constexpr SystemType system = SystemType::VELOCITY; // TODO
 
         SampleLog log;
         fillVoltageSampleLog(log, vectorSampleLog.voltage);
