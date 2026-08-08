@@ -35,27 +35,41 @@ namespace sysid::gui {
     void generate_log_import_window() {
         static const std::vector<std::string>& formats = ImportFactory::getImportableFormats();
         static const auto joined_formats = formats
-        | std::views::transform([](const auto& s) { return "." + s; })
-        | std::views::join_with(std::string_view(", "))
-        | std::ranges::to<std::string>();
+            | std::views::transform([](const auto& s) { return "." + s; })
+            | std::views::join_with(std::string_view(", "))
+            | std::ranges::to<std::string>();
 
         static std::optional<std::string> selected_log = std::nullopt;
 
         ImGui::Begin("Log Import");
 
-        ImGui::Text("Supports: %s", joined_formats.c_str());
+        ImGui::TextDisabled("Supports:");
+        ImGui::SameLine();
+        ImGui::TextWrapped("%s", joined_formats.c_str());
 
-        if (ImGui::Button("Open Dialog")) {
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        if (ImGui::Button("Open Dialog", ImVec2(-FLT_MIN, 30.0f))) {
             const std::string& comma_separated_formats = std::ranges::to<std::string>(std::views::join_with(formats, ","));
             selected_log = show_file_dialog(comma_separated_formats);
         }
 
-        ImGui::Text("Selected Log: %s", [&]() {
-           if (!selected_log)
-               return "None";
-            return selected_log->c_str();
-        }());
-        if (selected_log) {
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        ImGui::Text("Selected Log:");
+
+        if (!selected_log) {
+            ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "None");
+        } else {
+            ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "%s", selected_log->c_str());
+
+            ImGui::Spacing();
+            ImGui::TextDisabled("(Drag from here)");
+
             dragndrop_source<std::string>("SELECTED_LOG", *selected_log);
         }
 
