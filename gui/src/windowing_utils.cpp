@@ -9,7 +9,9 @@
 #include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
+#include <unordered_map>
 
 namespace sysid::gui {
     static void glfw_error_callback(int error, const char* description) {
@@ -82,5 +84,29 @@ namespace sysid::gui {
         glViewport(0, 0, display_w, display_h);
         glClearColor(r, g, b, alpha);
         glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    template <typename T>
+    void dragndrop_source(const std::string_view identifier, const T& payload) {
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
+            ImGui::SetDragDropPayload(identifier.data(), &payload, sizeof(T));
+            ImGui::EndDragDropSource();
+        }
+    }
+
+    template <typename T>
+    std::optional<T> dragndrop_target(const char* identifier) {
+        if (ImGui::BeginDragDropTarget()) {
+            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(identifier);
+
+            if (payload && payload->DataSize == sizeof(T)) {
+                T result = *static_cast<const T*>(payload->Data);
+                ImGui::EndDragDropTarget();
+                return result;
+            }
+
+            ImGui::EndDragDropTarget();
+        }
+        return std::nullopt;
     }
 }
