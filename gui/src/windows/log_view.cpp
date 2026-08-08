@@ -4,36 +4,61 @@
 
 #include "log_view.hpp"
 
-#include <cmath>
 #include <imgui.h>
 #include <implot.h>
 
-void sysid::gui::generate_log_view() {
-    static float xs[1001], ys1[1001], ys2[1001];
-    static bool data_generated = false;
+#include "core/sample/logged_sample.hpp"
+#include "../LogStorage.hpp"
 
-    if (!data_generated) {
-        for (int i = 0; i < 1001; ++i) {
-            xs[i] = i * 0.01f;
-            ys1[i] = std::sin(xs[i] * 2.0f * 3.14159f);
-            ys2[i] = std::cos(xs[i] * 2.0f * 3.14159f);
+static constexpr double msToSeconds(const int64_t ms) {
+    return static_cast<double>(ms) / 1000;
+}
+
+static void generate_plot(const sysid::LogFile& logFile) {
+    if (ImPlot::BeginPlot("System Identification Data")) {
+        try {
+            ImPlot::SetupAxes("Timestamp", "Measurements");
+
+            for (size_t i = 0; i < logFile.steps.size(); ++i) {
+                const auto& [state, sampleLog] = logFile.steps[i];
+                const size_t num_samples = sampleLog.samples.size();
+
+                if (num_samples == 0) {
+                    continue;
+                }
+
+                // Extract measurement arrays utilizing the existing vectorize method
+                sysid::SampleVector vec = sampleLog.vectorize();
+
+                std::vector<double> timestamps(num_samples);
+                for (size_t j = 0; j < num_samples; ++j) {
+                    timestamps[j] = static_cast<double>(msToSeconds(sampleLog.samples[j].timestamp));
+                }
+
+                std::string prefix = std::format("Step {} ", i);
+
+                ImPlot::PlotLine((prefix + "u").c_str(), timestamps.data(), vec.u.data(), static_cast<int>(num_samples));
+                ImPlot::PlotLine((prefix + "y_meas").c_str(), timestamps.data(), vec.y_meas.data(), static_cast<int>(num_samples));
+                ImPlot::PlotLine((prefix + "dydt_meas").c_str(), timestamps.data(), vec.dydt_meas.data(), static_cast<int>(num_samples));
+                ImPlot::PlotLine((prefix + "dydt2_meas").c_str(), timestamps.data(), vec.dydt2_meas.data(), static_cast<int>(num_samples));
+            }
+        }catch (const std::exception& e) {
+            ImPlot::EndPlot();
+            ImGui::End();
+            throw;
         }
-        data_generated = true;
-    }
-
-    ImGui::Begin("My ImPlot Window");
-
-    // BeginPlot creates the plotting region. Passing ImVec2(-1, 0) instructs the
-    // plot to fill the available width of the window and calculate a default height.
-    if (ImPlot::BeginPlot("Sine and Cosine Waves", ImVec2(-1, 0))) {
-
-        // PlotLine processes the arrays and renders the line geometries.
-        // It requires a label, a pointer to the X values, a pointer to the Y values,
-        // and the total element count.
-        ImPlot::PlotLine("Sine", xs, ys1, 1001);
-        ImPlot::PlotLine("Cosine", xs, ys2, 1001);
-
         ImPlot::EndPlot();
+    }
+}
+
+void sysid::gui::generate_log_view() {
+    ImGui::Begin("Log Viewer");
+
+    if (LogStorage::hasLog()) {
+        const LogFile& logFile = LogStorage::getLog();
+        generate_plot(logFile);
+    }else {
+        ImGui::TextDisabled("No Log Currently Loaded!");
     }
 
     ImGui::End();
