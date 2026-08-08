@@ -48,4 +48,14 @@ add_library(implot STATIC
 target_include_directories(implot PUBLIC ${implot_SOURCE_DIR})
 target_link_libraries(implot PUBLIC imgui)
 
-target_link_libraries(sysid-gui PRIVATE sysid-core imgui implot)
+FetchContent_Declare(
+        nfd
+        GIT_REPOSITORY https://github.com/btzy/nativefiledialog-extended.git
+        GIT_TAG        v1.3.0
+)
+
+set(NFD_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(nfd)
+
+target_link_libraries(sysid-gui PRIVATE sysid-core imgui implot nfd)
