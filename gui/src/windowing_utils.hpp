@@ -19,7 +19,7 @@ namespace sysid::gui {
     void dragndrop_source(const std::string_view identifier, const T& payload);
 
     template <typename T>
-    std::optional<T> dragndrop_target(const char* identifier);
+    std::optional<T> dragndrop_target(const std::string_view identifier);
 }
 
 #endif //SYSID_WINDOWING_UTILS_HPP

@@ -1,10 +1,9 @@
 //
 // Created by adarw on 8/2/26.
 //
-#include "imgui.h"
 #include <GLFW/glfw3.h>
-#include <iostream>
 
+#include "nfd.hpp"
 #include "windowing_utils.hpp"
 #include "windows/log_import_window.hpp"
 
@@ -12,6 +11,7 @@
 using namespace sysid::gui;
 
 int main() {
+    NFD_Init();
     GLFWwindow* window = init_window();
     while (!glfwWindowShouldClose(window)) {
         begin_frame();
@@ -23,5 +23,6 @@ int main() {
     }
 
     terminate_window(window);
+    NFD_Quit();
     return 0;
 }

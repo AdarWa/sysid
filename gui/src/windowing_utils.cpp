@@ -88,25 +88,44 @@ namespace sysid::gui {
 
     template <typename T>
     void dragndrop_source(const std::string_view identifier, const T& payload) {
-        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
-            ImGui::SetDragDropPayload(identifier.data(), &payload, sizeof(T));
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+            if constexpr (std::is_trivially_copyable_v<T>) {
+                ImGui::SetDragDropPayload(identifier.data(), &payload, sizeof(T));
+            } else {
+                const T* ptr = &payload;
+                ImGui::SetDragDropPayload(identifier.data(), &ptr, sizeof(const T*));
+            }
             ImGui::EndDragDropSource();
         }
     }
 
     template <typename T>
-    std::optional<T> dragndrop_target(const char* identifier) {
+    std::optional<T> dragndrop_target(const std::string_view identifier) {
         if (ImGui::BeginDragDropTarget()) {
-            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(identifier);
+            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(identifier.data());
 
-            if (payload && payload->DataSize == sizeof(T)) {
-                T result = *static_cast<const T*>(payload->Data);
-                ImGui::EndDragDropTarget();
-                return result;
+            if (payload) {
+                if constexpr (std::is_trivially_copyable_v<T>) {
+                    if (payload->DataSize == sizeof(T)) {
+                        T result = *static_cast<const T*>(payload->Data);
+                        ImGui::EndDragDropTarget();
+                        return result;
+                    }
+                } else {
+                    if (payload->DataSize == sizeof(const T*)) {
+                        const T* ptr = *static_cast<const T* const*>(payload->Data);
+                        T result = *ptr;
+                        ImGui::EndDragDropTarget();
+                        return result;
+                    }
+                }
             }
 
             ImGui::EndDragDropTarget();
         }
         return std::nullopt;
     }
+
+    template void dragndrop_source<std::string>(const std::string_view, const std::string&);
+    template std::optional<std::string> dragndrop_target<std::string>(const std::string_view);
 }
