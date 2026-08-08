@@ -4,6 +4,8 @@
 
 #include "windowing_utils.hpp"
 
+#include <implot.h>
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -11,6 +13,7 @@
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
 
 namespace sysid::gui {
@@ -37,6 +40,7 @@ namespace sysid::gui {
         IMGUI_CHECKVERSION();
 
         ImGui::CreateContext();
+        ImPlot::CreateContext();
         const ImGuiIO& io = ImGui::GetIO(); (void)io;
 
         ImGui::StyleColorsDark();
@@ -64,6 +68,7 @@ namespace sysid::gui {
     void terminate_window(GLFWwindow* window) {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
+        ImPlot::DestroyContext();
         ImGui::DestroyContext();
 
         glfwDestroyWindow(window);
