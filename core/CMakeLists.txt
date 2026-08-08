@@ -78,7 +78,7 @@ if(ENABLE_WPIUTIL)
 
     add_subdirectory(${wpilib_SOURCE_DIR}/datalog ${wpilib_BINARY_DIR}/datalog)
 
-    add_compile_definitions(WITH_WPIUTIL)
+    target_compile_definitions(sysid-core PUBLIC WITH_WPIUTIL)
     target_link_libraries(sysid-core PRIVATE wpiutil datalog)
 endif()
 
