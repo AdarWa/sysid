@@ -1,1 +1,4 @@
 cmake-build*
+.venv
+**/__pycache__
+*.wpilog
